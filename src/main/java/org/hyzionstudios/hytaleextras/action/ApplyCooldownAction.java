@@ -3,7 +3,7 @@ package org.hyzionstudios.hytaleextras.action;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEffect;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 
@@ -39,20 +39,20 @@ public class ApplyCooldownAction extends TriggerEffect {
     public void execute(TriggerContext ctx) {
         try {
             if (name == null || name.isBlank()) {
-                HytaleextrasPlugin.get().getLogger()
+                HyextrasPlugin.get().getLogger()
                         .at(Level.WARNING).log("[apply_cooldown] skipped: name is empty");
                 return;
             }
             if (duration <= 0f) {
-                HytaleextrasPlugin.get().getLogger()
+                HyextrasPlugin.get().getLogger()
                         .at(Level.WARNING).log("[apply_cooldown] skipped: duration must be > 0");
                 return;
             }
             UUID uuid = TriggerVolumeApiAdapter.getEntityUuid(ctx);
             if (uuid == null) return;
-            HytaleextrasPlugin.get().getCooldownService().apply(uuid, name, duration);
+            HyextrasPlugin.get().getCooldownService().apply(uuid, name, duration);
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[apply_cooldown] failed for name=" + name);
         }

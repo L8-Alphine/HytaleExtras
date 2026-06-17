@@ -3,7 +3,7 @@ package org.hyzionstudios.hytaleextras.condition;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerCondition;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 
@@ -37,16 +37,16 @@ public class HasTagCondition extends TriggerCondition {
     public boolean test(TriggerContext ctx) {
         try {
             if (tag == null || tag.isBlank()) {
-                HytaleextrasPlugin.get().getLogger()
+                HyextrasPlugin.get().getLogger()
                         .at(Level.WARNING).log("[has_tag] skipped: tag is empty");
                 return false;
             }
             UUID uuid = TriggerVolumeApiAdapter.getEntityUuid(ctx);
             if (uuid == null) return false;
-            boolean result = HytaleextrasPlugin.get().getTagService().hasTag(uuid, tag);
+            boolean result = HyextrasPlugin.get().getTagService().hasTag(uuid, tag);
             return (invert != null && invert) != result;
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[has_tag] test failed for tag=" + tag);
             return false;

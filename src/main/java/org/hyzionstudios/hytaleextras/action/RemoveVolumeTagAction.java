@@ -3,7 +3,7 @@ package org.hyzionstudios.hytaleextras.action;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEffect;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 import org.hyzionstudios.hytaleextras.util.StringTemplate;
@@ -60,20 +60,20 @@ public class RemoveVolumeTagAction extends TriggerEffect {
                     : ctx.getVolume().getId();
             if (value != null) {
                 String resolvedValue = StringTemplate.resolve(
-                        value, ctx, HytaleextrasPlugin.get().getVariableService());
+                        value, ctx, HyextrasPlugin.get().getVariableService());
                 mgr.removeTag(targetId, key, resolvedValue, ctx.getEntityRef(), uuid);
             } else {
                 mgr.removeTag(targetId, key, ctx.getEntityRef(), uuid);
             }
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[remove_volume_tag] failed: volume=" + targetVolumeId + " key=" + key);
         }
     }
 
     private void warn(String reason) {
-        HytaleextrasPlugin.get().getLogger()
+        HyextrasPlugin.get().getLogger()
                 .at(Level.WARNING).log("[remove_volume_tag] skipped: " + reason);
     }
 

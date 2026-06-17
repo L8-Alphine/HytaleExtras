@@ -3,7 +3,7 @@ package org.hyzionstudios.hytaleextras.condition;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerCondition;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 import org.hyzionstudios.hytaleextras.service.PlayerVariableService;
@@ -58,7 +58,7 @@ public class VariableCondition extends TriggerCondition {
             UUID uuid = TriggerVolumeApiAdapter.getEntityUuid(ctx);
             if (uuid == null) return false;
 
-            PlayerVariableService vars = HytaleextrasPlugin.get().getVariableService();
+            PlayerVariableService vars = HyextrasPlugin.get().getVariableService();
             return switch (operator) {
                 case EXISTS -> vars.get(uuid, key) != null;
                 case NOT_EXISTS -> vars.get(uuid, key) == null;
@@ -68,7 +68,7 @@ public class VariableCondition extends TriggerCondition {
                 case LESS_THAN -> vars.getLong(uuid, key) < parseLong(value);
             };
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[variable_condition] test failed for key=" + key);
             return false;
@@ -81,7 +81,7 @@ public class VariableCondition extends TriggerCondition {
     }
 
     private void warn(String reason) {
-        HytaleextrasPlugin.get().getLogger()
+        HyextrasPlugin.get().getLogger()
                 .at(Level.WARNING)
                 .log("[variable_condition] " + reason);
     }

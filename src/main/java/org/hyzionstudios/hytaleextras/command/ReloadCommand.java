@@ -4,7 +4,7 @@ import com.hypixel.hytale.protocol.FormattedMessage;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncCommand;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -20,7 +20,7 @@ public class ReloadCommand extends AbstractAsyncCommand {
 
     @Override
     protected CompletableFuture<Void> executeAsync(CommandContext ctx) {
-        HytaleextrasPlugin.get().reloadConfig();
+        HyextrasPlugin.get().reloadConfig();
         ctx.sendMessage(msg("HytaleExtras configuration reloaded."));
         return CompletableFuture.completedFuture(null);
     }

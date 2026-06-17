@@ -4,7 +4,7 @@ import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEffect;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 import org.hyzionstudios.hytaleextras.util.RichText;
 import org.hyzionstudios.hytaleextras.util.StringTemplate;
@@ -31,7 +31,7 @@ public class SendRichMessageAction extends TriggerEffect {
     public void execute(TriggerContext ctx) {
         try {
             if (message == null || message.isBlank()) {
-                HytaleextrasPlugin.get().getLogger()
+                HyextrasPlugin.get().getLogger()
                         .at(Level.WARNING).log("[send_rich_message] skipped: message is empty");
                 return;
             }
@@ -44,10 +44,10 @@ public class SendRichMessageAction extends TriggerEffect {
             String resolved = StringTemplate.resolve(
                     message,
                     ctx,
-                    HytaleextrasPlugin.get().getVariableService());
+                    HyextrasPlugin.get().getVariableService());
             pr.sendMessage(RichText.toMessage(resolved));
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[send_rich_message] failed");
         }

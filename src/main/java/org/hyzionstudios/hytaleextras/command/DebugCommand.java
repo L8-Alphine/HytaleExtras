@@ -8,7 +8,7 @@ import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncCommand;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractCommandCollection;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.state.RuntimeStateStore;
 
 import java.util.Map;
@@ -50,7 +50,7 @@ public class DebugCommand extends AbstractCommandCollection {
             Map<String, Object> vars = state.vars().snapshot(uuid);
             Map<String, Float> cds  = state.cooldowns().snapshot(uuid);
             Set<UUID> hidden         = state.playerOverrides().snapshotHidden(uuid);
-            Set<String> tags         = HytaleextrasPlugin.get().getTagService().snapshotTags(uuid);
+            Set<String> tags         = HyextrasPlugin.get().getTagService().snapshotTags(uuid);
 
             StringBuilder sb = new StringBuilder("=== ").append(target.getUsername()).append(" ===");
 

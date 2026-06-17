@@ -5,7 +5,7 @@ import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEffect;
 import com.hypixel.hytale.builtin.triggervolumes.manager.TriggerVolumeManager;
 import com.hypixel.hytale.builtin.triggervolumes.manager.VolumeEntry;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 
@@ -62,7 +62,7 @@ public class ToggleTriggerEnabledAction extends TriggerEffect {
             boolean newState = resolveState(target.isEnabled());
             target.setEnabled(newState);
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[toggle_trigger_enabled] failed for volume: " + volumeId);
         }
@@ -77,7 +77,7 @@ public class ToggleTriggerEnabledAction extends TriggerEffect {
     }
 
     private void warn(String reason) {
-        HytaleextrasPlugin.get().getLogger()
+        HyextrasPlugin.get().getLogger()
                 .at(Level.WARNING)
                 .log("[toggle_trigger_enabled] skipped: " + reason);
     }

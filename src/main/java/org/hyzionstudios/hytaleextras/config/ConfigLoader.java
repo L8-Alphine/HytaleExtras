@@ -1,6 +1,6 @@
 package org.hyzionstudios.hytaleextras.config;
 
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -31,7 +31,7 @@ public final class ConfigLoader {
         try (Reader reader = Files.newBufferedReader(file)) {
             props.load(reader);
         } catch (IOException e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[HytaleExtras] Failed to read config — using defaults");
             return cfg;
@@ -53,7 +53,7 @@ public final class ConfigLoader {
                 props.store(writer, "HytaleExtras Configuration");
             }
         } catch (IOException e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[HytaleExtras] Failed to write default config file");
         }

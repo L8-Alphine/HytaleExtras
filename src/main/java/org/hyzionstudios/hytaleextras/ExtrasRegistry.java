@@ -17,8 +17,8 @@ import java.util.logging.Level;
 
 /**
  * Registers all HytaleExtras effects and conditions with the native Trigger Volume system.
- * Called early from {@link HytaleextrasPlugin#setup()} so saved custom entries can decode,
- * then retried from {@link HytaleextrasPlugin#start()} if the native plugin was not ready yet.
+ * Called early from {@link HyextrasPlugin#setup()} so saved custom entries can decode,
+ * then retried from {@link HyextrasPlugin#start()} if the native plugin was not ready yet.
  */
 public final class ExtrasRegistry {
 
@@ -42,7 +42,7 @@ public final class ExtrasRegistry {
 
     private static volatile boolean registered;
 
-    public static synchronized void register(HytaleextrasPlugin plugin) {
+    public static synchronized void register(HyextrasPlugin plugin) {
         if (registered) {
             return;
         }

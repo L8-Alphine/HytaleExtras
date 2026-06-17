@@ -6,7 +6,7 @@ import com.hypixel.hytale.builtin.triggervolumes.manager.TriggerVolumeManager;
 import com.hypixel.hytale.builtin.triggervolumes.manager.VolumeEntry;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import org.hyzionstudios.hytaleextras.ExtraTriggerDispatcher;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 
@@ -48,7 +48,7 @@ public class TriggerNamedVolumeAction extends TriggerEffect {
             }
             VolumeEntry target = mgr.getVolume(volumeId);
             if (target == null) {
-                HytaleextrasPlugin.get().getLogger()
+                HyextrasPlugin.get().getLogger()
                         .at(Level.WARNING)
                         .log("[trigger_named_volume] volume not found: " + volumeId);
                 return;
@@ -58,14 +58,14 @@ public class TriggerNamedVolumeAction extends TriggerEffect {
                     ctx.getSpatialVolumes(), ctx.getTagKey(), ctx.getTagValue(),
                     ctx.getBlockPosition(), ctx.getBlockId());
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[trigger_named_volume] failed for volumeId=" + volumeId);
         }
     }
 
     private void warn(String reason) {
-        HytaleextrasPlugin.get().getLogger()
+        HyextrasPlugin.get().getLogger()
                 .at(Level.WARNING)
                 .log("[trigger_named_volume] skipped: " + reason);
     }

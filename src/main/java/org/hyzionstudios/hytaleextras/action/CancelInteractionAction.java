@@ -4,7 +4,7 @@ import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEffect;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEventType;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 
 import java.util.UUID;
@@ -43,9 +43,9 @@ public class CancelInteractionAction extends TriggerEffect {
 
             UUID uuid = TriggerVolumeApiAdapter.getEntityUuid(ctx);
             if (uuid == null) return;
-            HytaleextrasPlugin.get().getInteractionTriggerService().markCancelPending(uuid);
+            HyextrasPlugin.get().getInteractionTriggerService().markCancelPending(uuid);
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[cancel_interaction] failed");
         }

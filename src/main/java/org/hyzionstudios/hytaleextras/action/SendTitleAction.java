@@ -8,7 +8,7 @@ import com.hypixel.hytale.protocol.packets.interface_.Notification;
 import com.hypixel.hytale.protocol.packets.interface_.NotificationStyle;
 import com.hypixel.hytale.protocol.packets.interface_.ShowEventTitle;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 import org.hyzionstudios.hytaleextras.util.RichText;
 import org.hyzionstudios.hytaleextras.util.StringTemplate;
@@ -63,7 +63,7 @@ public class SendTitleAction extends TriggerEffect {
             boolean hasTitle = title != null && !title.isBlank();
             boolean hasBar   = actionBar != null && !actionBar.isBlank();
             if (!hasTitle && !hasBar) {
-                HytaleextrasPlugin.get().getLogger()
+                HyextrasPlugin.get().getLogger()
                         .at(Level.WARNING).log("[send_title] skipped: both title and actionBar are empty");
                 return;
             }
@@ -71,7 +71,7 @@ public class SendTitleAction extends TriggerEffect {
             PlayerRef pr = ctx.getStore().getComponent(ctx.getEntityRef(), PlayerRef.getComponentType());
             if (pr == null) return;
 
-            var vars = HytaleextrasPlugin.get().getVariableService();
+            var vars = HyextrasPlugin.get().getVariableService();
 
             if (hasTitle) {
                 String resolvedTitle = StringTemplate.resolve(title, ctx, vars);
@@ -96,7 +96,7 @@ public class SendTitleAction extends TriggerEffect {
                 pr.getPacketHandler().write(notification);
             }
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[send_title] failed");
         }

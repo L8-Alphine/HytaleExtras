@@ -4,7 +4,7 @@ import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerCondition;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 
 import java.util.logging.Level;
@@ -53,7 +53,7 @@ public class IsOperatorCondition extends TriggerCondition {
             boolean hasOp = pr.hasPermission(perm);
             return invert ? !hasOp : hasOp;
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[is_operator] condition test failed");
             return false;

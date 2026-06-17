@@ -4,7 +4,7 @@ import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEffect;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.server.core.entity.entities.player.HiddenPlayersManager;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 import org.hyzionstudios.hytaleextras.state.PlayerOverrideService;
@@ -43,12 +43,12 @@ public class ClearPlayerOverridesAction extends TriggerEffect {
             UUID viewerUuid = TriggerVolumeApiAdapter.getEntityUuid(ctx);
             if (viewerUuid == null) { warn("triggering entity is not a player"); return; }
 
-            PlayerOverrideService svc = HytaleextrasPlugin.get().getRuntimeState().playerOverrides();
+            PlayerOverrideService svc = HyextrasPlugin.get().getRuntimeState().playerOverrides();
             Set<UUID> snapshot = svc.snapshotHidden(viewerUuid);
             svc.clearAll(viewerUuid);
 
             boolean doPackets = (usePackets == null || usePackets)
-                    && HytaleextrasPlugin.get().getExtrasConfig().advancedPacketActions;
+                    && HyextrasPlugin.get().getExtrasConfig().advancedPacketActions;
             if (doPackets && !snapshot.isEmpty()) {
                 HiddenPlayersManager hpm = TriggerVolumeApiAdapter.getHiddenPlayersManager(
                         ctx.getStore(), ctx.getEntityRef());
@@ -59,14 +59,14 @@ public class ClearPlayerOverridesAction extends TriggerEffect {
                 }
             }
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[clear_player_overrides] failed");
         }
     }
 
     private void warn(String reason) {
-        HytaleextrasPlugin.get().getLogger()
+        HyextrasPlugin.get().getLogger()
                 .at(Level.WARNING)
                 .log("[clear_player_overrides] skipped: " + reason);
     }

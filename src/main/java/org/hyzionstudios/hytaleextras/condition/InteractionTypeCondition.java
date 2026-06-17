@@ -4,7 +4,7 @@ import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerCondition;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.protocol.InteractionType;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 
 import javax.annotation.Nullable;
@@ -62,7 +62,7 @@ public class InteractionTypeCondition extends TriggerCondition {
             boolean matches = type.name().equalsIgnoreCase(ctx.getTagValue());
             return resolveInvert(matches);
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[interaction_type] condition test failed");
             return false;

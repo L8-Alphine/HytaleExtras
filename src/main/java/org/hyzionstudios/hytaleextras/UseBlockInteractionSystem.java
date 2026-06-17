@@ -14,9 +14,9 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
  */
 public final class UseBlockInteractionSystem extends EntityEventSystem<EntityStore, UseBlockEvent.Pre> {
 
-    private final HytaleextrasPlugin plugin;
+    private final HyextrasPlugin plugin;
 
-    public UseBlockInteractionSystem(HytaleextrasPlugin plugin) {
+    public UseBlockInteractionSystem(HyextrasPlugin plugin) {
         super(UseBlockEvent.Pre.class);
         this.plugin = plugin;
     }

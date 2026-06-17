@@ -3,7 +3,7 @@ package org.hyzionstudios.hytaleextras.condition;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerCondition;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 import org.hyzionstudios.hytaleextras.state.PlayerOverrideService;
@@ -48,11 +48,11 @@ public class PlayerHiddenCondition extends TriggerCondition {
             UUID targetUuid = TriggerVolumeApiAdapter.getPlayerUuidByName(ctx.getStore(), targetPlayer);
             if (targetUuid == null) return resolveInvert(false);
 
-            PlayerOverrideService svc = HytaleextrasPlugin.get().getRuntimeState().playerOverrides();
+            PlayerOverrideService svc = HyextrasPlugin.get().getRuntimeState().playerOverrides();
             boolean hidden = svc.isEntityHidden(viewerUuid, targetUuid);
             return resolveInvert(hidden);
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[player_hidden] condition test failed");
             return false;

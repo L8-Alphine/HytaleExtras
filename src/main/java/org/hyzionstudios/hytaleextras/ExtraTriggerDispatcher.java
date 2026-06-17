@@ -57,7 +57,7 @@ public final class ExtraTriggerDispatcher {
                 try {
                     accepted = condition.test(ctx);
                 } catch (Exception e) {
-                    HytaleextrasPlugin.get().getLogger()
+                    HyextrasPlugin.get().getLogger()
                             .at(Level.WARNING).withCause(e)
                             .log("[hextras dispatcher] condition error in volume=" + volume.getId());
                     accepted = false;
@@ -69,7 +69,7 @@ public final class ExtraTriggerDispatcher {
                 try {
                     condition.applyOnAccept(ctx);
                 } catch (Exception e) {
-                    HytaleextrasPlugin.get().getLogger()
+                    HyextrasPlugin.get().getLogger()
                             .at(Level.WARNING).withCause(e)
                             .log("[hextras dispatcher] condition accept hook error in volume=" + volume.getId());
                     fireEffects(volume.getRejectionEffects(), eventType, ctx, "rejection", volume.getId());
@@ -83,7 +83,7 @@ public final class ExtraTriggerDispatcher {
             }
             return true;
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[hextras dispatcher] dispatch failed for volume=" + (volume != null ? volume.getId() : "<null>"));
             return false;
@@ -101,7 +101,7 @@ public final class ExtraTriggerDispatcher {
             try {
                 effect.execute(ctx);
             } catch (Exception e) {
-                HytaleextrasPlugin.get().getLogger()
+                HyextrasPlugin.get().getLogger()
                         .at(Level.WARNING).withCause(e)
                         .log("[hextras dispatcher] " + kind + " error in volume=" + volumeId);
             }

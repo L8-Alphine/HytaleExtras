@@ -40,9 +40,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-public class HytaleextrasPlugin extends JavaPlugin {
+public class HyextrasPlugin extends JavaPlugin {
 
-    private static HytaleextrasPlugin instance;
+    private static HyextrasPlugin instance;
 
     private PlayerVariableService variableService;
     private CooldownService cooldownService;
@@ -60,11 +60,11 @@ public class HytaleextrasPlugin extends JavaPlugin {
     /** username → UUID for all currently connected players. */
     private final ConcurrentHashMap<String, UUID> playerNameToUuid = new ConcurrentHashMap<>();
 
-    public HytaleextrasPlugin(@Nonnull JavaPluginInit init) {
+    public HyextrasPlugin(@Nonnull JavaPluginInit init) {
         super(init);
     }
 
-    public static HytaleextrasPlugin get() {
+    public static HyextrasPlugin get() {
         return instance;
     }
 

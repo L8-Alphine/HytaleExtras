@@ -32,7 +32,7 @@ public final class TriggerVolumeApiAdapter {
             TriggerVolumesPlugin.get().registerEffectType(typeId, clazz, codec);
             return true;
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.SEVERE).withCause(e)
                     .log("Failed to register effect type: " + typeId);
             return false;
@@ -45,7 +45,7 @@ public final class TriggerVolumeApiAdapter {
             TriggerVolumesPlugin.get().registerConditionType(typeId, clazz, codec);
             return true;
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.SEVERE).withCause(e)
                     .log("Failed to register condition type: " + typeId);
             return false;
@@ -73,7 +73,7 @@ public final class TriggerVolumeApiAdapter {
                     TriggerVolumesPlugin.get().getManagerResourceType();
             return store.getResource(rt);
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("Could not resolve TriggerVolumeManager from store.");
             return null;
@@ -89,7 +89,7 @@ public final class TriggerVolumeApiAdapter {
             WorldTimeResource wt = store.getResource(WorldTimeResource.getResourceType());
             return wt != null ? wt.getCurrentHour() : -1;
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("Could not read WorldTimeResource.");
             return -1;
@@ -106,7 +106,7 @@ public final class TriggerVolumeApiAdapter {
             PlayerRef pr = store.getComponent(ref, PlayerRef.getComponentType());
             return pr != null ? pr.getHiddenPlayersManager() : null;
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("Could not get HiddenPlayersManager.");
             return null;
@@ -119,6 +119,6 @@ public final class TriggerVolumeApiAdapter {
      */
     @Nullable
     public static UUID getPlayerUuidByName(Store<EntityStore> store, String username) {
-        return HytaleextrasPlugin.get().getPlayerUuidByName(username);
+        return HyextrasPlugin.get().getPlayerUuidByName(username);
     }
 }

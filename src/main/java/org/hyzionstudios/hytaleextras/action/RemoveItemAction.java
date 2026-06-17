@@ -8,7 +8,7 @@ import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.CombinedItemContainer;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 
 import javax.annotation.Nullable;
@@ -47,7 +47,7 @@ public class RemoveItemAction extends TriggerEffect {
     public void execute(TriggerContext ctx) {
         try {
             if (itemId == null || itemId.isBlank()) {
-                HytaleextrasPlugin.get().getLogger()
+                HyextrasPlugin.get().getLogger()
                         .at(Level.WARNING).log("[remove_item] skipped: itemId is empty");
                 return;
             }
@@ -60,7 +60,7 @@ public class RemoveItemAction extends TriggerEffect {
                 case IN_HAND -> removeFromActiveSlot(ctx, stack);
             }
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[remove_item] failed for itemId=" + itemId);
         }
@@ -70,7 +70,7 @@ public class RemoveItemAction extends TriggerEffect {
         CombinedItemContainer combined = InventoryComponent.getCombined(
                 ctx.getStore(), ctx.getEntityRef(), InventoryComponent.EVERYTHING);
         if (combined == null) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).log("[remove_item] player has no inventory");
             return;
         }
@@ -81,7 +81,7 @@ public class RemoveItemAction extends TriggerEffect {
         InventoryComponent.Hotbar hotbar = ctx.getStore().getComponent(
                 ctx.getEntityRef(), InventoryComponent.Hotbar.getComponentType());
         if (hotbar == null || hotbar.getInventory() == null) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).log("[remove_item] player has no hotbar inventory");
             return;
         }
@@ -98,7 +98,7 @@ public class RemoveItemAction extends TriggerEffect {
         InventoryComponent.Hotbar hotbar = ctx.getStore().getComponent(
                 ctx.getEntityRef(), InventoryComponent.Hotbar.getComponentType());
         if (hotbar == null || !removeFromActiveSlot(hotbar, stack)) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).log("[remove_item] no matching active item for itemId=" + itemId);
         }
     }

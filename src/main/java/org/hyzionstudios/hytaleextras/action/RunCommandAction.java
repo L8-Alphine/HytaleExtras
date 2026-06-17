@@ -5,7 +5,7 @@ import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEffect;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.server.core.command.system.CommandManager;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 import org.hyzionstudios.hytaleextras.util.StringTemplate;
 
@@ -49,16 +49,16 @@ public class RunCommandAction extends TriggerEffect {
                 warn("triggering entity is not a player");
                 return;
             }
-            String resolved = StringTemplate.resolve(command, ctx, HytaleextrasPlugin.get().getVariableService());
+            String resolved = StringTemplate.resolve(command, ctx, HyextrasPlugin.get().getVariableService());
             CommandManager.get().handleCommand(pr, resolved)
                     .exceptionally(e -> {
-                        HytaleextrasPlugin.get().getLogger()
+                        HyextrasPlugin.get().getLogger()
                                 .at(Level.WARNING).withCause(e)
                                 .log("[run_command] " + label() + " failed during execution");
                         return null;
                     });
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[run_command] " + label() + " failed");
         }
@@ -69,7 +69,7 @@ public class RunCommandAction extends TriggerEffect {
     }
 
     private void warn(String reason) {
-        HytaleextrasPlugin.get().getLogger()
+        HyextrasPlugin.get().getLogger()
                 .at(Level.WARNING)
                 .log("[run_command] " + label() + " skipped: " + reason);
     }

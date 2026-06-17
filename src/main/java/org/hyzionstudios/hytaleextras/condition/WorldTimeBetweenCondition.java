@@ -4,7 +4,7 @@ import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerCondition;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.server.core.modules.time.WorldTimeResource;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 
@@ -47,7 +47,7 @@ public class WorldTimeBetweenCondition extends TriggerCondition {
         try {
             int hour = TriggerVolumeApiAdapter.getWorldHour(ctx.getStore());
             if (hour < 0) {
-                HytaleextrasPlugin.get().getLogger()
+                HyextrasPlugin.get().getLogger()
                         .at(Level.WARNING)
                         .log("[world_time_between] world time unavailable — passing by default");
                 return true;
@@ -58,7 +58,7 @@ public class WorldTimeBetweenCondition extends TriggerCondition {
             // Wrap-around: e.g. fromHour=22, toHour=5 covers 22:00 → 05:00
             return hour >= fromHour || hour <= toHour;
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[world_time_between] condition test failed");
             return false;

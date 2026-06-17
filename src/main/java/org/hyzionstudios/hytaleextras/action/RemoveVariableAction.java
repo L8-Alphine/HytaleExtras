@@ -3,7 +3,7 @@ package org.hyzionstudios.hytaleextras.action;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEffect;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 
@@ -33,15 +33,15 @@ public class RemoveVariableAction extends TriggerEffect {
     public void execute(TriggerContext ctx) {
         try {
             if (key == null || key.isBlank()) {
-                HytaleextrasPlugin.get().getLogger()
+                HyextrasPlugin.get().getLogger()
                         .at(Level.WARNING).log("[remove_variable] skipped: key is empty");
                 return;
             }
             UUID uuid = TriggerVolumeApiAdapter.getEntityUuid(ctx);
             if (uuid == null) return;
-            HytaleextrasPlugin.get().getVariableService().remove(uuid, key);
+            HyextrasPlugin.get().getVariableService().remove(uuid, key);
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[remove_variable] failed for key=" + key);
         }

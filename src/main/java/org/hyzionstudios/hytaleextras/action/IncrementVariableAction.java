@@ -3,7 +3,7 @@ package org.hyzionstudios.hytaleextras.action;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEffect;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 
@@ -43,19 +43,19 @@ public class IncrementVariableAction extends TriggerEffect {
             UUID uuid = TriggerVolumeApiAdapter.getEntityUuid(ctx);
             if (uuid == null) { warn("entity is not a player"); return; }
             long amount = (delta != null) ? delta : 1L;
-            long newVal = HytaleextrasPlugin.get().getVariableService().increment(uuid, key, amount);
-            HytaleextrasPlugin.get().getLogger()
+            long newVal = HyextrasPlugin.get().getVariableService().increment(uuid, key, amount);
+            HyextrasPlugin.get().getLogger()
                     .at(Level.FINE)
                     .log("[increment_variable] " + key + " → " + newVal + " (delta=" + amount + ")");
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[increment_variable] failed for key=" + key);
         }
     }
 
     private void warn(String reason) {
-        HytaleextrasPlugin.get().getLogger()
+        HyextrasPlugin.get().getLogger()
                 .at(Level.WARNING)
                 .log("[increment_variable] skipped: " + reason);
     }

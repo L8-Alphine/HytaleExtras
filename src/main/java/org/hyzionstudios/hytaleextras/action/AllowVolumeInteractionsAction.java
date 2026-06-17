@@ -3,7 +3,7 @@ package org.hyzionstudios.hytaleextras.action;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEffect;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 
 import javax.annotation.Nullable;
@@ -47,10 +47,10 @@ public class AllowVolumeInteractionsAction extends TriggerEffect {
             String vid = volumeId != null && !volumeId.isBlank()
                     ? volumeId
                     : ctx.getVolume().getId();
-            Set<String> allowedSet = HytaleextrasPlugin.get().getInteractionAllowedVolumeIds();
+            Set<String> allowedSet = HyextrasPlugin.get().getInteractionAllowedVolumeIds();
             applyMode(allowedSet, vid);
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[allow_volume_interactions] failed for volume=" + volumeId);
         }

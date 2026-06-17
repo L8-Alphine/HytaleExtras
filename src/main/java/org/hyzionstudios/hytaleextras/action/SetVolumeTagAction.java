@@ -3,7 +3,7 @@ package org.hyzionstudios.hytaleextras.action;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerEffect;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 import org.hyzionstudios.hytaleextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hytaleextras.codec.CodecHelper;
 import org.hyzionstudios.hytaleextras.util.StringTemplate;
@@ -57,21 +57,21 @@ public class SetVolumeTagAction extends TriggerEffect {
 
             String resolvedValue = StringTemplate.resolve(
                     value != null ? value : "1", ctx,
-                    HytaleextrasPlugin.get().getVariableService());
+                    HyextrasPlugin.get().getVariableService());
 
             String targetId = targetVolumeId != null && !targetVolumeId.isBlank()
                     ? targetVolumeId
                     : ctx.getVolume().getId();
             mgr.setTag(targetId, key, resolvedValue, ctx.getEntityRef(), uuid);
         } catch (Exception e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[set_volume_tag] failed: volume=" + targetVolumeId + " key=" + key);
         }
     }
 
     private void warn(String reason) {
-        HytaleextrasPlugin.get().getLogger()
+        HyextrasPlugin.get().getLogger()
                 .at(Level.WARNING).log("[set_volume_tag] skipped: " + reason);
     }
 

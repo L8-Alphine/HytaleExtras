@@ -1,6 +1,6 @@
 package org.hyzionstudios.hytaleextras.service;
 
-import org.hyzionstudios.hytaleextras.HytaleextrasPlugin;
+import org.hyzionstudios.hytaleextras.HyextrasPlugin;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -82,7 +82,7 @@ public final class PlayerTagService {
                 set.add(key);
             }
         } catch (IOException e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[hextras] Failed to load tags for player " + player);
         }
@@ -109,7 +109,7 @@ public final class PlayerTagService {
                 props.store(w, null);
             }
         } catch (IOException e) {
-            HytaleextrasPlugin.get().getLogger()
+            HyextrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[hextras] Failed to save tags for player " + player);
         }

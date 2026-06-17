@@ -27,7 +27,7 @@ public final class I18nDefaultsLoader {
     private I18nDefaultsLoader() {}
 
     @SuppressWarnings("unchecked")
-    public static void load(HytaleextrasPlugin plugin) {
+    public static void load(HyextrasPlugin plugin) {
         InputStream in = I18nDefaultsLoader.class.getClassLoader().getResourceAsStream(RESOURCE);
         if (in == null) {
             plugin.getLogger().at(Level.WARNING)
