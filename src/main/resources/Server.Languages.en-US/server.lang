@@ -1,0 +1,367 @@
+# HytaleExtras — English editor translations
+# Packaged as an asset language file so the Trigger Volume editor can resolve these keys.
+# Keys here are stored at runtime as "server.<key>" (the file stem "server" is prepended by Hytale).
+
+# =====================================================================
+# Effect display names
+# =====================================================================
+customUI.triggerVolumeEffectEditor.effectType.run_command = Run Command
+customUI.triggerVolumeEffectEditor.effectType.set_variable = Set Variable
+customUI.triggerVolumeEffectEditor.effectType.add_variable = Add Variable
+customUI.triggerVolumeEffectEditor.effectType.increment_variable = Increment Variable
+customUI.triggerVolumeEffectEditor.effectType.remove_variable = Remove Variable
+customUI.triggerVolumeEffectEditor.effectType.apply_cooldown = Apply Cooldown
+customUI.triggerVolumeEffectEditor.effectType.trigger_named_volume = Trigger Named Volume
+customUI.triggerVolumeEffectEditor.effectType.remove_item = Remove Item
+customUI.triggerVolumeEffectEditor.effectType.send_title = Send Title / Action Bar
+customUI.triggerVolumeEffectEditor.effectType.send_rich_message = Send Rich Message
+customUI.triggerVolumeEffectEditor.effectType.toggle_trigger_enabled = Toggle Trigger Enabled
+customUI.triggerVolumeEffectEditor.effectType.player_hide_entity = Hide Entity from Player
+customUI.triggerVolumeEffectEditor.effectType.player_show_entity = Show Entity to Player
+customUI.triggerVolumeEffectEditor.effectType.clear_player_overrides = Clear Player Visibility
+customUI.triggerVolumeEffectEditor.effectType.set_volume_tag = Set Volume Tag
+customUI.triggerVolumeEffectEditor.effectType.remove_volume_tag = Remove Volume Tag
+customUI.triggerVolumeEffectEditor.effectType.cancel_interaction = Cancel Interaction
+customUI.triggerVolumeEffectEditor.effectType.add_tag = Add Player Tag
+customUI.triggerVolumeEffectEditor.effectType.remove_tag = Remove Player Tag
+customUI.triggerVolumeEffectEditor.effectType.block_volume_interactions = Block Volume Interactions
+customUI.triggerVolumeEffectEditor.effectType.allow_volume_interactions = Allow Volume Interactions
+customUI.triggerVolumeEffectEditor.effectType.set_camera = Set Camera Mode
+
+# =====================================================================
+# Condition display names
+# =====================================================================
+customUI.triggerVolumeEffectEditor.conditionType.variable_condition = Variable Condition
+customUI.triggerVolumeEffectEditor.conditionType.cooldown_ready = Cooldown Ready
+customUI.triggerVolumeEffectEditor.conditionType.is_operator = Is Operator
+customUI.triggerVolumeEffectEditor.conditionType.world_time_between = World Time Between
+customUI.triggerVolumeEffectEditor.conditionType.player_hidden = Player Hidden
+customUI.triggerVolumeEffectEditor.conditionType.volume_has_tag = Volume Has Tag
+customUI.triggerVolumeEffectEditor.conditionType.has_tag = Has Player Tag
+customUI.triggerVolumeEffectEditor.conditionType.interaction_type = Interaction Type
+
+# =====================================================================
+# run_command
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.run_command.Command = Command
+customUI.triggerVolumeEffectEditor.field.run_command.Command.tooltip = The server command to run. Supports {player} (username), {uuid} (entity UUID), and {variable:key} (player variable). Do not include a leading slash.
+customUI.triggerVolumeEffectEditor.field.run_command.Command.placeholder = e.g. say Hello {player}!
+customUI.triggerVolumeEffectEditor.field.run_command.DebugName = Debug Name
+customUI.triggerVolumeEffectEditor.field.run_command.DebugName.tooltip = Optional label shown in server logs when this effect fires. Useful for identifying which run_command triggered when a volume has several.
+customUI.triggerVolumeEffectEditor.field.run_command.DebugName.placeholder = e.g. announce-on-enter
+
+# =====================================================================
+# set_variable
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.set_variable.Key = Variable Name
+customUI.triggerVolumeEffectEditor.field.set_variable.Key.tooltip = Name of the per-player variable to set. Variables persist for the player's session and can be read in conditions with variable_condition or in commands via {variable:key}.
+customUI.triggerVolumeEffectEditor.field.set_variable.Key.placeholder = e.g. zone
+customUI.triggerVolumeEffectEditor.field.set_variable.Value = Value
+customUI.triggerVolumeEffectEditor.field.set_variable.Value.tooltip = String value to assign. Supports {player} and {uuid} substitutions. For numeric counters, use increment_variable instead.
+customUI.triggerVolumeEffectEditor.field.set_variable.Value.placeholder = e.g. ruins
+
+# =====================================================================
+# increment_variable
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.increment_variable.Key = Variable Name
+customUI.triggerVolumeEffectEditor.field.increment_variable.Key.tooltip = Name of the per-player numeric variable to change. If the variable does not exist yet it is treated as 0 before the delta is applied.
+customUI.triggerVolumeEffectEditor.field.increment_variable.Key.placeholder = e.g. lap_count
+customUI.triggerVolumeEffectEditor.field.increment_variable.Delta = Delta
+customUI.triggerVolumeEffectEditor.field.increment_variable.Delta.tooltip = Amount to add each time this effect fires. Use a negative value (e.g. -1) to decrement. Defaults to 1 if omitted.
+
+# =====================================================================
+# add_variable
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.add_variable.Key = Variable Name
+customUI.triggerVolumeEffectEditor.field.add_variable.Key.tooltip = Name of the per-player numeric variable to add to. If the variable does not exist yet it is treated as 0 before the delta is applied.
+customUI.triggerVolumeEffectEditor.field.add_variable.Key.placeholder = e.g. score
+customUI.triggerVolumeEffectEditor.field.add_variable.Delta = Amount
+customUI.triggerVolumeEffectEditor.field.add_variable.Delta.tooltip = Amount to add each time this effect fires. Use a negative value (e.g. -1) to subtract. Defaults to 1 if omitted.
+
+# =====================================================================
+# remove_variable
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.remove_variable.Key = Variable Name
+customUI.triggerVolumeEffectEditor.field.remove_variable.Key.tooltip = The per-player variable to delete entirely. After removal, variable_condition with operator "exists" will return false for this key.
+customUI.triggerVolumeEffectEditor.field.remove_variable.Key.placeholder = e.g. zone
+
+# =====================================================================
+# apply_cooldown
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.apply_cooldown.Name = Cooldown Name
+customUI.triggerVolumeEffectEditor.field.apply_cooldown.Name.tooltip = A unique identifier for this cooldown, scoped per player. Use the same name in a cooldown_ready condition on the same volume to prevent the effect from firing again until the cooldown expires.
+customUI.triggerVolumeEffectEditor.field.apply_cooldown.Name.placeholder = e.g. ruins_intro
+customUI.triggerVolumeEffectEditor.field.apply_cooldown.Duration = Duration (seconds)
+customUI.triggerVolumeEffectEditor.field.apply_cooldown.Duration.tooltip = How long the cooldown lasts in seconds. Fractional values are supported (e.g. 0.5 for half a second, 300.0 for 5 minutes).
+
+# =====================================================================
+# trigger_named_volume
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.trigger_named_volume.VolumeId = Target Volume ID
+customUI.triggerVolumeEffectEditor.field.trigger_named_volume.VolumeId.tooltip = ID of the trigger volume to dispatch for the current player. The target volume's matching conditions, rejection effects, effects, enabled state, and cooldown are evaluated using the target volume context.
+customUI.triggerVolumeEffectEditor.field.trigger_named_volume.VolumeId.placeholder = e.g. reward_fanfare
+
+# =====================================================================
+# remove_item
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.remove_item.ItemId = Item ID
+customUI.triggerVolumeEffectEditor.field.remove_item.ItemId.tooltip = The namespace:id of the item to remove (e.g. hytale:gold_coin). The item is matched by ID across the specified inventory location.
+customUI.triggerVolumeEffectEditor.field.remove_item.ItemId.placeholder = e.g. hytale:gold_coin
+customUI.triggerVolumeEffectEditor.field.remove_item.Quantity = Quantity
+customUI.triggerVolumeEffectEditor.field.remove_item.Quantity.tooltip = Number of items to remove. Defaults to 1. If the player has fewer than this amount, all available copies are removed and a warning is logged.
+customUI.triggerVolumeEffectEditor.field.remove_item.Location = Location
+customUI.triggerVolumeEffectEditor.field.remove_item.Location.tooltip = Where to search: "inventory" (default, full inventory), "hotbar", or "in_hand". Leave blank to search the full inventory.
+customUI.triggerVolumeEffectEditor.field.remove_item.Location.placeholder = inventory
+customUI.triggerVolumeEffectEditor.field.remove_item.Location.option.inventory = Inventory
+customUI.triggerVolumeEffectEditor.field.remove_item.Location.option.hotbar = Hotbar
+customUI.triggerVolumeEffectEditor.field.remove_item.Location.option.in_hand = In Hand
+
+# =====================================================================
+# send_title
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.send_title.Title = Title
+customUI.triggerVolumeEffectEditor.field.send_title.Title.tooltip = Large headline text shown in the center of the screen. Supports {player}, {uuid}, and {variable:key} substitutions. Leave blank to show only a subtitle or action bar.
+customUI.triggerVolumeEffectEditor.field.send_title.Title.placeholder = e.g. Welcome, {player}!
+customUI.triggerVolumeEffectEditor.field.send_title.Subtitle = Subtitle
+customUI.triggerVolumeEffectEditor.field.send_title.Subtitle.tooltip = Smaller text shown below the title. Supports {player}, {uuid}, and {variable:key}. Only visible when a Title is also provided.
+customUI.triggerVolumeEffectEditor.field.send_title.Subtitle.placeholder = e.g. You have entered the ruins.
+customUI.triggerVolumeEffectEditor.field.send_title.ActionBar = Action Bar
+customUI.triggerVolumeEffectEditor.field.send_title.ActionBar.tooltip = Text shown in the action bar above the hotbar. Supports {player}, {uuid}, and {variable:key}. Set this instead of Title/Subtitle to use the action bar display.
+customUI.triggerVolumeEffectEditor.field.send_title.ActionBar.placeholder = e.g. Score: {variable:score}
+customUI.triggerVolumeEffectEditor.field.send_title.Duration = Duration (seconds)
+customUI.triggerVolumeEffectEditor.field.send_title.Duration.tooltip = How long the title stays fully visible in seconds. Defaults to 3.5 if omitted.
+customUI.triggerVolumeEffectEditor.field.send_title.FadeIn = Fade In (seconds)
+customUI.triggerVolumeEffectEditor.field.send_title.FadeIn.tooltip = Time in seconds for the title to fade in. Defaults to 0.5.
+customUI.triggerVolumeEffectEditor.field.send_title.FadeOut = Fade Out (seconds)
+customUI.triggerVolumeEffectEditor.field.send_title.FadeOut.tooltip = Time in seconds for the title to fade out after the duration ends. Defaults to 0.5.
+
+# =====================================================================
+# send_rich_message
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.send_rich_message.Message = Message
+customUI.triggerVolumeEffectEditor.field.send_rich_message.Message.tooltip = Raw chat message sent to the triggering player. Supports {player}, {uuid}, {variable:key}, color codes like &a, &e, &#55FF55, and &r to reset formatting.
+customUI.triggerVolumeEffectEditor.field.send_rich_message.Message.placeholder = e.g. &aWelcome back {player}&r to the game.
+
+# =====================================================================
+# toggle_trigger_enabled
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.toggle_trigger_enabled.VolumeId = Target Volume ID
+customUI.triggerVolumeEffectEditor.field.toggle_trigger_enabled.VolumeId.tooltip = ID of the trigger volume to enable, disable, or toggle. Leave blank to target the current volume.
+customUI.triggerVolumeEffectEditor.field.toggle_trigger_enabled.VolumeId.placeholder = e.g. arena_entry_gate
+customUI.triggerVolumeEffectEditor.field.toggle_trigger_enabled.Mode = Mode
+customUI.triggerVolumeEffectEditor.field.toggle_trigger_enabled.Mode.tooltip = What to do: "enable" — turns the volume on; "disable" — turns it off; "toggle" (default) — flips its current enabled state.
+customUI.triggerVolumeEffectEditor.field.toggle_trigger_enabled.Mode.placeholder = enable / disable / toggle
+customUI.triggerVolumeEffectEditor.field.toggle_trigger_enabled.Mode.option.enable = Enable
+customUI.triggerVolumeEffectEditor.field.toggle_trigger_enabled.Mode.option.disable = Disable
+customUI.triggerVolumeEffectEditor.field.toggle_trigger_enabled.Mode.option.toggle = Toggle
+
+# =====================================================================
+# player_hide_entity
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetPlayer = Target Player
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetPlayer.tooltip = Username of the player to hide from the triggering player's view. Only the triggering player is affected — others still see the target normally. Requires advancedPacketActions=true in config to send the client visibility packet.
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetPlayer.placeholder = e.g. PlayerB
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.UsePackets = Use Packets
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.UsePackets.tooltip = Whether to send the client-side hide packet. Set to false to record the hidden state server-side only (for use with player_hidden conditions) without visually hiding the target.
+
+# =====================================================================
+# player_show_entity
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetPlayer = Target Player
+customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetPlayer.tooltip = Username of the player to reveal to the triggering player. Reverses a previous player_hide_entity for this viewer/target pair.
+customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetPlayer.placeholder = e.g. PlayerB
+customUI.triggerVolumeEffectEditor.field.player_show_entity.UsePackets = Use Packets
+customUI.triggerVolumeEffectEditor.field.player_show_entity.UsePackets.tooltip = Whether to send the client-side reveal packet. Should match the setting used in the corresponding player_hide_entity.
+
+# =====================================================================
+# clear_player_overrides
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.clear_player_overrides.UsePackets = Use Packets
+customUI.triggerVolumeEffectEditor.field.clear_player_overrides.UsePackets.tooltip = Whether to send client-side reveal packets for all players currently hidden from the triggering player. Defaults to true. Set to false to clear server state only.
+
+# =====================================================================
+# set_volume_tag
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.set_volume_tag.TargetVolumeId = Target Volume ID
+customUI.triggerVolumeEffectEditor.field.set_volume_tag.TargetVolumeId.tooltip = ID of the volume to tag. Leave blank to target the current volume. Volume tags can be read by volume_has_tag conditions on any volume.
+customUI.triggerVolumeEffectEditor.field.set_volume_tag.TargetVolumeId.placeholder = e.g. door_lock
+customUI.triggerVolumeEffectEditor.field.set_volume_tag.Key = Tag Key
+customUI.triggerVolumeEffectEditor.field.set_volume_tag.Key.tooltip = Name of the tag to set on the target volume. Use the same key in a volume_has_tag condition to cross-signal between volumes.
+customUI.triggerVolumeEffectEditor.field.set_volume_tag.Key.placeholder = e.g. locked
+customUI.triggerVolumeEffectEditor.field.set_volume_tag.Value = Tag Value
+customUI.triggerVolumeEffectEditor.field.set_volume_tag.Value.tooltip = Value to assign to the tag. Defaults to "1" if omitted. Match this value in volume_has_tag to distinguish multiple states on the same key.
+customUI.triggerVolumeEffectEditor.field.set_volume_tag.Value.placeholder = e.g. 1
+
+# =====================================================================
+# remove_volume_tag
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.remove_volume_tag.TargetVolumeId = Target Volume ID
+customUI.triggerVolumeEffectEditor.field.remove_volume_tag.TargetVolumeId.tooltip = ID of the volume whose tag should be removed. Leave blank to target the current volume.
+customUI.triggerVolumeEffectEditor.field.remove_volume_tag.TargetVolumeId.placeholder = e.g. door_lock
+customUI.triggerVolumeEffectEditor.field.remove_volume_tag.Key = Tag Key
+customUI.triggerVolumeEffectEditor.field.remove_volume_tag.Key.tooltip = Name of the tag to delete from the target volume. After removal, volume_has_tag for this key will return false.
+customUI.triggerVolumeEffectEditor.field.remove_volume_tag.Key.placeholder = e.g. locked
+
+# cancel_interaction has no configurable fields.
+
+# =====================================================================
+# add_tag
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.add_tag.Tag = Tag Name
+customUI.triggerVolumeEffectEditor.field.add_tag.Tag.tooltip = Tag to add to the triggering player. Player tags are persistent boolean flags saved to disk that survive server restarts. Use has_tag conditions to gate story progression, track achievements, or remember choices.
+customUI.triggerVolumeEffectEditor.field.add_tag.Tag.placeholder = e.g. storyline_a_active
+
+# =====================================================================
+# remove_tag
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.remove_tag.Tag = Tag Name
+customUI.triggerVolumeEffectEditor.field.remove_tag.Tag.tooltip = Tag to remove from the triggering player. After removal, has_tag for this name will return false and the state will no longer be saved to disk.
+customUI.triggerVolumeEffectEditor.field.remove_tag.Tag.placeholder = e.g. storyline_a_active
+
+# =====================================================================
+# block_volume_interactions
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.block_volume_interactions.VolumeId = Volume ID
+customUI.triggerVolumeEffectEditor.field.block_volume_interactions.VolumeId.tooltip = ID of the volume to block interactions in. Defaults to the current volume. While blocked, players inside cannot interact with anything unless they are also inside an allow_volume_interactions volume.
+customUI.triggerVolumeEffectEditor.field.block_volume_interactions.VolumeId.placeholder = e.g. dungeon_main
+customUI.triggerVolumeEffectEditor.field.block_volume_interactions.Mode = Mode
+customUI.triggerVolumeEffectEditor.field.block_volume_interactions.Mode.tooltip = "enable" (default) — activates the block; "disable" — removes it; "toggle" — flips the block state each time this effect fires.
+customUI.triggerVolumeEffectEditor.field.block_volume_interactions.Mode.placeholder = enable / disable / toggle
+customUI.triggerVolumeEffectEditor.field.block_volume_interactions.Mode.option.enable = Enable
+customUI.triggerVolumeEffectEditor.field.block_volume_interactions.Mode.option.disable = Disable
+customUI.triggerVolumeEffectEditor.field.block_volume_interactions.Mode.option.toggle = Toggle
+
+# =====================================================================
+# allow_volume_interactions
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.allow_volume_interactions.VolumeId = Volume ID
+customUI.triggerVolumeEffectEditor.field.allow_volume_interactions.VolumeId.tooltip = ID of the volume that overrides a block. A player inside both a blocked volume AND this volume can still interact. Ideal for sub-volumes like a keyhole inside a locked room.
+customUI.triggerVolumeEffectEditor.field.allow_volume_interactions.VolumeId.placeholder = e.g. keyhole_alcove
+customUI.triggerVolumeEffectEditor.field.allow_volume_interactions.Mode = Mode
+customUI.triggerVolumeEffectEditor.field.allow_volume_interactions.Mode.tooltip = "enable" (default) — registers the override; "disable" — removes it; "toggle" — flips the override state each time this effect fires.
+customUI.triggerVolumeEffectEditor.field.allow_volume_interactions.Mode.placeholder = enable / disable / toggle
+customUI.triggerVolumeEffectEditor.field.allow_volume_interactions.Mode.option.enable = Enable
+customUI.triggerVolumeEffectEditor.field.allow_volume_interactions.Mode.option.disable = Disable
+customUI.triggerVolumeEffectEditor.field.allow_volume_interactions.Mode.option.toggle = Toggle
+
+# =====================================================================
+# set_camera
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.set_camera.Mode = Mode
+customUI.triggerVolumeEffectEditor.field.set_camera.Mode.tooltip = Camera mode to apply: "first_person" — forces first-person view; "third_person" — forces third-person view; "reset" — restores the player's own camera preference and clears any lock.
+customUI.triggerVolumeEffectEditor.field.set_camera.Mode.placeholder = first_person / third_person / reset
+customUI.triggerVolumeEffectEditor.field.set_camera.Mode.option.first_person = First Person
+customUI.triggerVolumeEffectEditor.field.set_camera.Mode.option.third_person = Third Person
+customUI.triggerVolumeEffectEditor.field.set_camera.Mode.option.reset = Reset
+customUI.triggerVolumeEffectEditor.field.set_camera.Locked = Locked
+customUI.triggerVolumeEffectEditor.field.set_camera.Locked.tooltip = If true, the player cannot manually switch camera perspective while in this mode. Has no effect when Mode is "reset". Defaults to false.
+
+# =====================================================================
+# variable_condition
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.variable_condition.Key = Variable Name
+customUI.triggerVolumeEffectEditor.field.variable_condition.Key.tooltip = The per-player variable to evaluate. The condition fails silently if the variable does not exist and the operator requires a value.
+customUI.triggerVolumeEffectEditor.field.variable_condition.Key.placeholder = e.g. zone
+customUI.triggerVolumeEffectEditor.field.variable_condition.Operator = Operator
+customUI.triggerVolumeEffectEditor.field.variable_condition.Operator.tooltip = Comparison: "equals" / "not_equals" — string match; "greater_than" / "less_than" — numeric comparison; "exists" — passes if the variable is set to any value; "not_exists" — passes if the variable is absent.
+customUI.triggerVolumeEffectEditor.field.variable_condition.Operator.placeholder = equals / not_equals / greater_than / less_than / exists / not_exists
+customUI.triggerVolumeEffectEditor.field.variable_condition.Operator.option.exists = Exists
+customUI.triggerVolumeEffectEditor.field.variable_condition.Operator.option.not_exists = Does Not Exist
+customUI.triggerVolumeEffectEditor.field.variable_condition.Operator.option.equals = Equals
+customUI.triggerVolumeEffectEditor.field.variable_condition.Operator.option.not_equals = Does Not Equal
+customUI.triggerVolumeEffectEditor.field.variable_condition.Operator.option.greater_than = Greater Than
+customUI.triggerVolumeEffectEditor.field.variable_condition.Operator.option.less_than = Less Than
+customUI.triggerVolumeEffectEditor.field.variable_condition.Value = Compare Value
+customUI.triggerVolumeEffectEditor.field.variable_condition.Value.tooltip = Value to compare against. Required for equals, not_equals, greater_than, and less_than. Leave blank for exists and not_exists operators.
+customUI.triggerVolumeEffectEditor.field.variable_condition.Value.placeholder = e.g. ruins
+
+# =====================================================================
+# cooldown_ready
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.cooldown_ready.Name = Cooldown Name
+customUI.triggerVolumeEffectEditor.field.cooldown_ready.Name.tooltip = Identifier of the cooldown to check. Passes if no active cooldown with this name exists for the triggering player (expired or never applied). Pair with apply_cooldown using the same name to create a one-shot or rate-limited trigger.
+customUI.triggerVolumeEffectEditor.field.cooldown_ready.Name.placeholder = e.g. ruins_intro
+
+# =====================================================================
+# is_operator
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.is_operator.Permission = Permission
+customUI.triggerVolumeEffectEditor.field.is_operator.Permission.tooltip = Optional custom permission string to check. If omitted, the condition checks whether the player is a server operator. If set, it checks for this specific permission instead.
+customUI.triggerVolumeEffectEditor.field.is_operator.Permission.placeholder = e.g. myserver.admin
+customUI.triggerVolumeEffectEditor.field.is_operator.Invert = Invert
+customUI.triggerVolumeEffectEditor.field.is_operator.Invert.tooltip = If true, the condition passes when the player does NOT have the permission. Useful to gate content for non-operators or unprivileged players.
+
+# =====================================================================
+# world_time_between
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.world_time_between.FromHour = From Hour (0-23)
+customUI.triggerVolumeEffectEditor.field.world_time_between.FromHour.tooltip = Start of the active window (inclusive) as a 24-hour integer: 0 = midnight, 6 = dawn, 12 = noon, 18 = dusk. If FromHour is greater than ToHour, the range wraps midnight (e.g. 22 to 5 covers 10 pm through 5 am).
+customUI.triggerVolumeEffectEditor.field.world_time_between.ToHour = To Hour (0-23)
+customUI.triggerVolumeEffectEditor.field.world_time_between.ToHour.tooltip = End of the active window (inclusive) as a 24-hour integer. Set this lower than FromHour to span midnight (e.g. FromHour=20, ToHour=5 for nighttime).
+
+# =====================================================================
+# player_hidden
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.player_hidden.TargetPlayer = Target Player
+customUI.triggerVolumeEffectEditor.field.player_hidden.TargetPlayer.tooltip = Username of the player whose visibility state to check. Passes if the triggering player currently has this player hidden via player_hide_entity.
+customUI.triggerVolumeEffectEditor.field.player_hidden.TargetPlayer.placeholder = e.g. PlayerB
+customUI.triggerVolumeEffectEditor.field.player_hidden.Invert = Invert
+customUI.triggerVolumeEffectEditor.field.player_hidden.Invert.tooltip = If true, the condition passes when the target is NOT hidden from the triggering player. Use to fire effects the moment a player becomes visible again.
+
+# =====================================================================
+# volume_has_tag
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.volume_has_tag.TargetVolumeId = Target Volume ID
+customUI.triggerVolumeEffectEditor.field.volume_has_tag.TargetVolumeId.tooltip = ID of the volume whose tags to inspect. Leave blank to check the current volume.
+customUI.triggerVolumeEffectEditor.field.volume_has_tag.TargetVolumeId.placeholder = e.g. door_lock
+customUI.triggerVolumeEffectEditor.field.volume_has_tag.Key = Tag Key
+customUI.triggerVolumeEffectEditor.field.volume_has_tag.Key.tooltip = Tag name to look for on the target volume.
+customUI.triggerVolumeEffectEditor.field.volume_has_tag.Key.placeholder = e.g. locked
+customUI.triggerVolumeEffectEditor.field.volume_has_tag.Value = Tag Value
+customUI.triggerVolumeEffectEditor.field.volume_has_tag.Value.tooltip = Optional. If set, the condition only passes when the tag exists AND equals this exact value. Leave blank to pass for any value.
+customUI.triggerVolumeEffectEditor.field.volume_has_tag.Value.placeholder = e.g. 1
+customUI.triggerVolumeEffectEditor.field.volume_has_tag.Invert = Invert
+customUI.triggerVolumeEffectEditor.field.volume_has_tag.Invert.tooltip = If true, passes when the volume does NOT have the specified tag (or value). Useful to trigger effects only after a tag has been cleared.
+
+# =====================================================================
+# has_tag
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.has_tag.Tag = Tag Name
+customUI.triggerVolumeEffectEditor.field.has_tag.Tag.tooltip = Player tag to check. Passes if the triggering player has this persistent tag (set via add_tag). Tags survive server restarts and are per-player.
+customUI.triggerVolumeEffectEditor.field.has_tag.Tag.placeholder = e.g. storyline_a_active
+customUI.triggerVolumeEffectEditor.field.has_tag.Invert = Invert
+customUI.triggerVolumeEffectEditor.field.has_tag.Invert.tooltip = If true, passes when the player does NOT have the tag. Use to check if a player has not yet unlocked something or hasn't been to a location.
+
+# =====================================================================
+# interaction_type
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction = Interaction Type
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.tooltip = The interaction type to match. Leave blank to pass for any interaction. Common values: use (doors/chests/levers), primary (left-click/attack), secondary (right-click), ability1/2/3, pick, pickup. Only evaluates on On Tag Added events in volumes with the hextras:interact static tag.
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.placeholder = e.g. use
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.primary = Primary
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.secondary = Secondary
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.ability1 = Ability 1
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.ability2 = Ability 2
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.ability3 = Ability 3
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.use = Use
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.pick = Pick
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.pickup = Pickup
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.collision_enter = Collision Enter
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.collision_leave = Collision Leave
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.collision = Collision
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.entity_stat_effect = Entity Stat Effect
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.swap_to = Swap To
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.swap_from = Swap From
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.death = Death
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.wielding = Wielding
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.projectile_spawn = Projectile Spawn
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.projectile_hit = Projectile Hit
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.projectile_miss = Projectile Miss
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.projectile_bounce = Projectile Bounce
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.held = Held
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.held_offhand = Held Offhand
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.equipped = Equipped
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.dodge = Dodge
+customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.game_mode_swap = Game Mode Swap
+customUI.triggerVolumeEffectEditor.field.interaction_type.Invert = Invert
+customUI.triggerVolumeEffectEditor.field.interaction_type.Invert.tooltip = If true, passes when the interaction type does NOT match. For example, Interaction=primary with Invert=true passes for all interactions except left-click attacks.

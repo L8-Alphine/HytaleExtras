@@ -1,0 +1,317 @@
+{
+  "_comment": "HytaleExtras — example effect/condition JSON snippets for trigger volume configs. Custom field keys start with uppercase (KeyedCodec requirement). 'type' and 'eventType' come from the native BASE_CODEC.",
+
+  "run_command": {
+    "type": "run_command",
+    "eventType": "ENTER",
+    "Command": "say {player} entered the ruins!",
+    "DebugName": "announce-on-enter"
+  },
+
+  "set_variable": {
+    "type": "set_variable",
+    "eventType": "ENTER",
+    "Key": "zone",
+    "Value": "ruins"
+  },
+
+  "increment_variable": {
+    "type": "increment_variable",
+    "eventType": "ENTER",
+    "Key": "lap_count",
+    "Delta": 1
+  },
+
+  "add_variable": {
+    "type": "add_variable",
+    "eventType": "ENTER",
+    "Key": "score",
+    "Delta": 1
+  },
+
+  "decrement_variable": {
+    "type": "increment_variable",
+    "eventType": "ENTER",
+    "Key": "lives",
+    "Delta": -1
+  },
+
+  "remove_variable": {
+    "type": "remove_variable",
+    "eventType": "EXIT",
+    "Key": "zone"
+  },
+
+  "apply_cooldown": {
+    "type": "apply_cooldown",
+    "eventType": "ENTER",
+    "Name": "ruins_intro",
+    "Duration": 300.0
+  },
+
+  "trigger_named_volume": {
+    "type": "trigger_named_volume",
+    "eventType": "ENTER",
+    "VolumeId": "reward_fanfare_volume"
+  },
+
+  "remove_item": {
+    "type": "remove_item",
+    "eventType": "ENTER",
+    "ItemId": "hytale:gold_coin",
+    "Quantity": 5,
+    "Location": "inventory"
+  },
+
+  "send_title": {
+    "type": "send_title",
+    "eventType": "ENTER",
+    "Title": "Welcome, {player}!",
+    "Subtitle": "You have entered the hidden ruins.",
+    "Duration": 3.0,
+    "FadeIn": 0.5,
+    "FadeOut": 0.5
+  },
+
+  "send_action_bar": {
+    "type": "send_title",
+    "eventType": "ENTER",
+    "ActionBar": "Score: {variable:score}"
+  },
+
+  "send_rich_message": {
+    "type": "send_rich_message",
+    "eventType": "ENTER",
+    "Message": "&aWelcome back {player}&r to the game."
+  },
+
+  "variable_condition_equals": {
+    "type": "variable_condition",
+    "eventType": "ENTER",
+    "Key": "rank",
+    "Operator": "equals",
+    "Value": "vip"
+  },
+
+  "variable_condition_greater_than": {
+    "type": "variable_condition",
+    "eventType": "ENTER",
+    "Key": "score",
+    "Operator": "greater_than",
+    "Value": "100"
+  },
+
+  "variable_condition_exists": {
+    "type": "variable_condition",
+    "eventType": "ENTER",
+    "Key": "zone",
+    "Operator": "exists"
+  },
+
+  "cooldown_ready": {
+    "type": "cooldown_ready",
+    "eventType": "ENTER",
+    "Name": "ruins_intro"
+  },
+
+  "cooldown_gate_example": {
+    "_comment": "Full pattern: gate an effect behind a per-player cooldown",
+    "conditions": [
+      { "type": "cooldown_ready", "eventType": "ENTER", "Name": "ruins_intro" }
+    ],
+    "effects": [
+      { "type": "apply_cooldown", "eventType": "ENTER", "Name": "ruins_intro", "Duration": 300.0 },
+      { "type": "send_title",     "eventType": "ENTER", "Title": "Welcome to the ruins, {player}!" }
+    ]
+  },
+
+  "variable_tracking_example": {
+    "_comment": "Set zone variable on ENTER, remove on EXIT",
+    "effects": [
+      { "type": "set_variable",    "eventType": "ENTER", "Key": "zone", "Value": "ruins" },
+      { "type": "remove_variable", "eventType": "EXIT",  "Key": "zone" }
+    ]
+  },
+
+  "is_operator": {
+    "type": "is_operator",
+    "eventType": "ENTER"
+  },
+
+  "is_operator_custom_permission": {
+    "type": "is_operator",
+    "eventType": "ENTER",
+    "Permission": "myserver.admin"
+  },
+
+  "is_not_operator": {
+    "type": "is_operator",
+    "eventType": "ENTER",
+    "Invert": true
+  },
+
+  "world_time_between_day": {
+    "type": "world_time_between",
+    "eventType": "ENTER",
+    "FromHour": 6,
+    "ToHour": 18
+  },
+
+  "world_time_between_night": {
+    "type": "world_time_between",
+    "eventType": "ENTER",
+    "FromHour": 20,
+    "ToHour": 5
+  },
+
+  "set_volume_tag": {
+    "type": "set_volume_tag",
+    "eventType": "ENTER",
+    "TargetVolumeId": "door_lock",
+    "Key": "locked",
+    "Value": "1"
+  },
+
+  "remove_volume_tag": {
+    "type": "remove_volume_tag",
+    "eventType": "EXIT",
+    "TargetVolumeId": "door_lock",
+    "Key": "locked"
+  },
+
+  "volume_has_tag": {
+    "type": "volume_has_tag",
+    "eventType": "ENTER",
+    "TargetVolumeId": "door_lock",
+    "Key": "locked"
+  },
+
+  "player_hide_entity": {
+    "type": "player_hide_entity",
+    "eventType": "ENTER",
+    "TargetPlayer": "PlayerB"
+  },
+
+  "player_show_entity": {
+    "type": "player_show_entity",
+    "eventType": "EXIT",
+    "TargetPlayer": "PlayerB"
+  },
+
+  "clear_player_overrides": {
+    "type": "clear_player_overrides",
+    "eventType": "EXIT"
+  },
+
+  "add_tag": {
+    "type": "add_tag",
+    "eventType": "ENTER",
+    "Tag": "storyline_a_active"
+  },
+
+  "remove_tag": {
+    "type": "remove_tag",
+    "eventType": "EXIT",
+    "Tag": "storyline_a_active"
+  },
+
+  "has_tag": {
+    "type": "has_tag",
+    "eventType": "ENTER",
+    "Tag": "storyline_a_active"
+  },
+
+  "has_tag_inverted": {
+    "_comment": "Passes only when the player does NOT have the tag",
+    "type": "has_tag",
+    "eventType": "ENTER",
+    "Tag": "storyline_a_active",
+    "Invert": true
+  },
+
+  "storyline_gate_example": {
+    "_comment": "Gate effects behind storyline tag; mark completion on exit",
+    "conditions": [
+      { "type": "has_tag", "eventType": "ENTER", "Tag": "found_key_blue" }
+    ],
+    "effects": [
+      { "type": "send_title", "eventType": "ENTER", "Title": "The door opens...", "Duration": 2.0 },
+      { "type": "add_tag",    "eventType": "ENTER", "Tag": "door_blue_unlocked" },
+      { "type": "remove_tag", "eventType": "EXIT",  "Tag": "door_blue_unlocked" }
+    ]
+  },
+
+  "block_volume_interactions": {
+    "type": "block_volume_interactions",
+    "eventType": "ENTER",
+    "VolumeId": "dungeon_main"
+  },
+
+  "allow_volume_interactions_override": {
+    "_comment": "Sub-volume inside dungeon_main that stays interactive",
+    "type": "allow_volume_interactions",
+    "eventType": "ENTER",
+    "VolumeId": "keyhole_alcove"
+  },
+
+  "toggle_interaction_block": {
+    "_comment": "Toggle the blocked state on each enter (lever effect)",
+    "type": "block_volume_interactions",
+    "VolumeId": "dungeon_main",
+    "Mode": "toggle"
+  },
+
+  "set_camera_third_person_locked": {
+    "type": "set_camera",
+    "eventType": "ENTER",
+    "Mode": "third_person",
+    "Locked": true
+  },
+
+  "set_camera_reset": {
+    "type": "set_camera",
+    "eventType": "EXIT",
+    "Mode": "reset"
+  },
+
+  "interaction_type_any": {
+    "_comment": "Passes for any interaction in an hextras:interact volume",
+    "type": "interaction_type",
+    "eventType": "TAG_ADDED"
+  },
+
+  "interaction_type_use": {
+    "_comment": "Passes only for Use interactions (doors, chests, levers)",
+    "type": "interaction_type",
+    "eventType": "TAG_ADDED",
+    "Interaction": "use"
+  },
+
+  "interaction_type_not_primary": {
+    "_comment": "Passes for anything except a primary attack",
+    "type": "interaction_type",
+    "eventType": "TAG_ADDED",
+    "Interaction": "primary",
+    "Invert": true
+  },
+
+  "interaction_volume_door_example": {
+    "_comment": "Full pattern: volume with hextras:interact tag fires on Use interaction (door/chest/lever). Pair the cancel_interaction effect to consume the interaction and block the native door response.",
+    "staticTags": { "hextras:interact": "1" },
+    "conditions": [
+      { "type": "interaction_type", "eventType": "TAG_ADDED", "Interaction": "use" }
+    ],
+    "effects": [
+      { "type": "send_title",         "eventType": "TAG_ADDED", "ActionBar": "You used it!" },
+      { "type": "cancel_interaction", "eventType": "TAG_ADDED" }
+    ]
+  },
+
+  "camera_cinematic_volume": {
+    "_comment": "Lock to third-person on enter, reset on exit",
+    "effects": [
+      { "type": "set_camera", "eventType": "ENTER", "Mode": "third_person", "Locked": true },
+      { "type": "set_camera", "eventType": "EXIT",  "Mode": "reset" }
+    ]
+  }
+}

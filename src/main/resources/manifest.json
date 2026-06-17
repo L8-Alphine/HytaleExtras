@@ -1,0 +1,16 @@
+{
+  "Group": "org.hyzionstudios",
+  "Name": "hytaleextras",
+  "Version": "1.0.0",
+  "Main": "org.hyzionstudios.hytaleextras.HytaleextrasPlugin",
+  "ServerVersion": ">=0.5.0 <0.6.0",
+  "Description": "Extends the native Trigger Volume system with per-player variables, named cooldowns, command execution, volume chaining, and more.",
+  "Authors": [
+    {
+      "Name": "Alphine"
+    }
+  ],
+  "Dependencies": {},
+  "OptionalDependencies": {},
+  "IncludesAssetPack": true
+}
