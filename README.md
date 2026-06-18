@@ -46,7 +46,7 @@ HyExtras targets the Hytale `0.5.x` server API line.
 |---|---|
 | `variable_condition` | Test a per-player variable against a value (`equals`, `not_equals`, `greater_than`, `less_than`, `exists`, `not_exists`) |
 | `cooldown_ready` | Pass only when a named HyExtras cooldown is not active |
-| `is_operator` | Pass if the triggering player holds a configurable permission (default `hytale.op`); optional `Invert` |
+| `is_operator` | Pass if the triggering player is in Hytale's operator group; optional custom `Permission` and `Invert` |
 | `world_time_between` | Pass if the world hour (0–23) is within `[FromHour, ToHour]`; supports midnight wrap-around |
 | `player_hidden` | Pass if the triggering player currently has `TargetPlayer` hidden from their view |
 | `volume_has_tag` | Pass if a named volume has (or lacks) a tag key, optionally matching an exact value |

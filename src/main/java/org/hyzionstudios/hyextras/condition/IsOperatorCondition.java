@@ -3,6 +3,7 @@ package org.hyzionstudios.hyextras.condition;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerCondition;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
+import com.hypixel.hytale.server.core.permissions.PermissionsModule;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import org.hyzionstudios.hyextras.HyExtrasPlugin;
 import org.hyzionstudios.hyextras.codec.CodecHelper;
@@ -10,10 +11,11 @@ import org.hyzionstudios.hyextras.codec.CodecHelper;
 import java.util.logging.Level;
 
 /**
- * Passes if the triggering entity holds the operator permission.
+ * Passes if the triggering player is a server operator.
  *
- * <p>Defaults to checking {@code "hytale.op"}. Override with {@code "Permission"} if the
- * server uses a different op-level permission string.
+ * <p>By default this mirrors Hytale's {@code /op} command by checking membership in the
+ * {@code "hytale:Admin"} permission group. Override with {@code "Permission"} to check a
+ * specific permission string instead.
  *
  * <p>JSON config:
  * <pre>{@code
@@ -21,13 +23,10 @@ import java.util.logging.Level;
  * { "type": "is_operator", "Invert": true }
  * { "type": "is_operator", "Permission": "myserver.admin" }
  * }</pre>
- *
- * <p>TODO: Replace {@code hasPermission()} with a direct {@code isOperator()} call once
- * confirmed in the Hytale PlayerRef API.
  */
 public class IsOperatorCondition extends TriggerCondition {
 
-    private static final String DEFAULT_OP_PERMISSION = "hytale.op";
+    private static final String OPERATOR_GROUP = "hytale:Admin";
 
     public static final BuilderCodec<IsOperatorCondition> CODEC = BuilderCodec.builder(
                     IsOperatorCondition.class, IsOperatorCondition::new, TriggerCondition.BASE_CODEC)
@@ -49,15 +48,27 @@ public class IsOperatorCondition extends TriggerCondition {
         try {
             PlayerRef pr = ctx.getStore().getComponent(ctx.getEntityRef(), PlayerRef.getComponentType());
             if (pr == null) return invert; // non-player entities never pass
-            String perm = (permission != null && !permission.isBlank()) ? permission : DEFAULT_OP_PERMISSION;
-            boolean hasOp = pr.hasPermission(perm);
-            return invert ? !hasOp : hasOp;
+            boolean matches = hasCustomPermission(pr) || isOperator(pr);
+            return invert ? !matches : matches;
         } catch (Exception e) {
             HyExtrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
                     .log("[is_operator] condition test failed");
             return false;
         }
+    }
+
+    private boolean hasCustomPermission(PlayerRef pr) {
+        return permission != null && !permission.isBlank() && pr.hasPermission(permission);
+    }
+
+    private boolean isOperator(PlayerRef pr) {
+        if (permission != null && !permission.isBlank()) {
+            return false;
+        }
+        return PermissionsModule.get()
+                .getGroupsForUser(pr.getUuid())
+                .contains(OPERATOR_GROUP);
     }
 
     public String getPermission() { return permission; }
