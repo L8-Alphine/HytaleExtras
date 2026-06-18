@@ -1,4 +1,4 @@
-# HytaleExtras — English editor translations
+# HyExtras — English editor translations
 # Packaged as an asset language file so the Trigger Volume editor can resolve these keys.
 # Keys here are stored at runtime as "server.<key>" (the file stem "server" is prepended by Hytale).
 

@@ -1,9 +1,17 @@
-# HytaleExtras
+# HyExtras
 
-HytaleExtras **extends** the native Hytale Trigger Volume system with new effects and conditions.
-It does **not** replace, shadow, or compete with any native Trigger Volume functionality.
+HyExtras is an unofficial server mod for Hytale that **extends** the native Trigger Volume system with new effects and conditions.
+It does **not** replace, shadow, or compete with any native Trigger Volume functionality, and it is not affiliated with or endorsed by Hypixel Studios.
 
-## What HytaleExtras adds
+## Compatibility
+
+HyExtras targets the Hytale `0.5.x` server API line.
+
+- Built and tested against `0.5.6`
+- Manifest server range: `>=0.5.0 <0.6.0`
+- Future `0.6.x` releases should be treated as a new compatibility pass because server APIs may change
+
+## What HyExtras adds
 
 ### New Effects (Actions)
 
@@ -14,7 +22,7 @@ It does **not** replace, shadow, or compete with any native Trigger Volume funct
 | `add_variable` | Add to a numeric per-player variable; alias of `increment_variable` |
 | `increment_variable` | Increment (or decrement) a numeric per-player variable |
 | `remove_variable` | Remove a per-player variable |
-| `apply_cooldown` | Apply a named HytaleExtras cooldown (separate from the native volume cooldown) |
+| `apply_cooldown` | Apply a named HyExtras cooldown (separate from the native volume cooldown) |
 | `trigger_named_volume` | Dispatch another named volume against the current entity, including its matching conditions, rejection effects, effects, enabled state, and cooldown |
 | `remove_item` | Remove item(s) from a player's inventory, hotbar, or active in-hand slot by item ID |
 | `send_title` | Send a title/subtitle via `ShowEventTitle` packet; `ActionBar` sends a `Notification` packet; supports placeholders and color codes |
@@ -25,7 +33,7 @@ It does **not** replace, shadow, or compete with any native Trigger Volume funct
 | `clear_player_overrides` | Reset all per-player visibility overrides for the triggering player |
 | `set_volume_tag` | Set a tag on another named volume; fires `TAG_ADDED` on the target volume for the current entity |
 | `remove_volume_tag` | Remove a tag from another named volume; fires `TAG_REMOVED`. Optional `Value` guards the remove |
-| `cancel_interaction` | Cancel the native interaction when inside the HytaleExtras interaction bridge (see below) |
+| `cancel_interaction` | Cancel the native interaction when inside the HyExtras interaction bridge (see below) |
 | `add_tag` | Add a boolean tag to the triggering player's **persistent** tag set (survives reconnects) |
 | `remove_tag` | Remove a boolean tag from the triggering player's persistent tag set |
 | `block_volume_interactions` | Block all interactions for players inside a volume; optional `Mode` (`enable`/`disable`/`toggle`) and `VolumeId` |
@@ -37,7 +45,7 @@ It does **not** replace, shadow, or compete with any native Trigger Volume funct
 | Type ID | Description |
 |---|---|
 | `variable_condition` | Test a per-player variable against a value (`equals`, `not_equals`, `greater_than`, `less_than`, `exists`, `not_exists`) |
-| `cooldown_ready` | Pass only when a named HytaleExtras cooldown is not active |
+| `cooldown_ready` | Pass only when a named HyExtras cooldown is not active |
 | `is_operator` | Pass if the triggering player holds a configurable permission (default `hytale.op`); optional `Invert` |
 | `world_time_between` | Pass if the world hour (0–23) is within `[FromHour, ToHour]`; supports midnight wrap-around |
 | `player_hidden` | Pass if the triggering player currently has `TargetPlayer` hidden from their view |
@@ -64,10 +72,10 @@ It does **not** replace, shadow, or compete with any native Trigger Volume funct
 /hextras list actions                    — list all registered extra effect type IDs
 /hextras list conditions                 — list all registered extra condition type IDs
 /hextras debug player <player>           — show variables, cooldowns, tags, and hidden-entity state
-/hextras reload                          — reload hytaleextras.properties at runtime
+/hextras reload                          — reload hyextras.properties at runtime
 ```
 
-### Configuration (`hytaleextras.properties`)
+### Configuration (`hyextras.properties`)
 
 ```properties
 # Enable per-player entity visibility packet sends (player_hide_entity, player_show_entity, etc.)
@@ -91,7 +99,7 @@ The `volume_has_tag` condition reads `VolumeEntry.getRawTags()` — this include
 
 ### Interaction Bridge
 
-The HytaleExtras interaction bridge fires volume effects when a player interacts with something while inside a volume. To enable it on a volume:
+The HyExtras interaction bridge fires volume effects when a player interacts with something while inside a volume. To enable it on a volume:
 
 1. Add static tag `hextras:interact` to the volume in the editor (any value, e.g. `1`).
 2. Add conditions and effects to the volume with event type **`TAG_ADDED`**.
@@ -101,7 +109,7 @@ The HytaleExtras interaction bridge fires volume effects when a player interacts
 
 The bridge uses `registerGlobal` so it fires for any player interacting in any world. Because it dispatches synchronously before the native interaction resolves, `cancel_interaction` is guaranteed to run in time.
 
-**InteractionType dropdown values** for the HytaleExtras `interaction_type` condition: `primary`, `secondary`, `ability1`, `ability2`, `ability3`, `use`, `pick`, `pickup`, `collision_enter`, `collision_leave`, `collision`, `swap_to`, `swap_from`, `death`.
+**InteractionType dropdown values** for the HyExtras `interaction_type` condition: `primary`, `secondary`, `ability1`, `ability2`, `ability3`, `use`, `pick`, `pickup`, `collision_enter`, `collision_leave`, `collision`, `swap_to`, `swap_from`, `death`.
 
 ---
 
@@ -188,7 +196,7 @@ They are distinct from variables: tags are flags (present / absent), not values.
 
 `/hextras debug player <name>` shows the current tag set alongside variables and cooldowns.
 
-> **Note on mob/entity visibility:** In API 0.5.5, there is no per-player mechanism to hide non-player entities (mobs, NPCs). `HiddenFromAdventurePlayers` hides from all adventure players, not a single viewer. `player_hide_entity` / `player_show_entity` only work player-to-player. Use `has_tag` conditions plus spawning/despawning prefabs (native `PastePrefab` + `DeleteVolume`) as the best available workaround for storyline-specific mob visibility.
+> **Note on mob/entity visibility:** In the current `0.5.x` API, there is no per-player mechanism to hide non-player entities (mobs, NPCs). `HiddenFromAdventurePlayers` hides from all adventure players, not a single viewer. `player_hide_entity` / `player_show_entity` only work player-to-player. Use `has_tag` conditions plus spawning/despawning prefabs (native `PastePrefab` + `DeleteVolume`) as the best available workaround for storyline-specific mob visibility.
 
 ### Volume Interaction Blocking
 
@@ -239,7 +247,7 @@ Camera changes are per-player (each player gets their own packet). `Locked: true
 The `player_hide_entity`, `player_show_entity`, and `clear_player_overrides` effects work together:
 
 1. Server-side state is **always** tracked in `PlayerOverrideService` regardless of `UsePackets`.
-2. The client-side `HiddenPlayersManager` packet is only sent when **both** `UsePackets: true` (the default) **and** `advancedPacketActions=true` in `hytaleextras.properties`.
+2. The client-side `HiddenPlayersManager` packet is only sent when **both** `UsePackets: true` (the default) **and** `advancedPacketActions=true` in `hyextras.properties`.
 3. The `player_hidden` condition tests the server-side state, so it works even when `UsePackets: false`.
 4. All state is cleared on player disconnect.
 
@@ -264,10 +272,10 @@ The following placeholders are supported in `run_command`, `send_title` (`Title`
 ## Architecture
 
 ```
-org.hyzionstudios.hytaleextras/
-├── HytaleextrasPlugin       — plugin entry point, singleton, player name registry
+org.hyzionstudios.hyextras/
+├── HyExtrasPlugin           — plugin entry point, singleton, player name registry
 ├── TriggerVolumeApiAdapter  — all native TriggerVolumesPlugin calls go through here
-├── ExtrasRegistry           — one-time registration of 21 effects and 8 conditions
+├── ExtrasRegistry           — one-time registration of 22 effects and 8 conditions
 ├── codec/
 │   └── CodecHelper          — KeyedCodec factory helpers
 ├── service/
@@ -278,11 +286,11 @@ org.hyzionstudios.hytaleextras/
 ├── state/
 │   ├── PlayerOverrideService  — per-viewer entity visibility tracking
 │   └── RuntimeStateStore      — unified accessor (vars, cooldowns, playerOverrides, config)
-├── action/                    — 18 TriggerEffect implementations (including tag/camera/blocking/message)
+├── action/                    — 19 TriggerEffect implementations (including tag/camera/blocking/message)
 ├── advanced/                  — 3 per-player view TriggerEffect implementations
 ├── condition/                 — 8 TriggerCondition implementations
 ├── command/                   — /hextras command tree
-├── config/                    — HytaleExtrasConfig, ConfigLoader
+├── config/                    — HyExtrasConfig, ConfigLoader
 └── util/
     └── StringTemplate         — {player}/{uuid}/{variable:key} resolution
 ```
@@ -294,6 +302,8 @@ org.hyzionstudios.hytaleextras/
 ```bash
 ./gradlew shadowJar
 ```
+
+The build compiles against Hytale Server API `0.5.6` while the packaged manifest declares compatibility with the broader `0.5.x` line.
 
 ## Deploying
 

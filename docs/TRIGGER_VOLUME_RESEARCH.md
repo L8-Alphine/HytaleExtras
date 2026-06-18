@@ -229,8 +229,8 @@ Package: `com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEve
 | 1 | `RemoveItemAction` removes from full inventory, hotbar, or active in-hand slot using native inventory containers | `RemoveItemAction.execute()` |
 | 2 | `SendTitleAction` sends title/subtitle and action-bar style notification packets | `SendTitleAction.execute()` |
 | 3 | `RunCommandAction` and `SendTitleAction` resolve `{player}`, `{uuid}`, and `{variable:key}` placeholders | `StringTemplate.resolve()` |
-| 4 | `TriggerNamedVolumeAction` uses the HytaleExtras dispatcher so target conditions, rejection effects, effects, enabled state, and cooldown are honored | `ExtraTriggerDispatcher.dispatch()` |
-| 5 | HytaleExtras editor translations are merged into `I18nModule` from `Server.Languages.en-US/server.lang` at startup | `I18nDefaultsLoader.load()` |
+| 4 | `TriggerNamedVolumeAction` uses the HyExtras dispatcher so target conditions, rejection effects, effects, enabled state, and cooldown are honored | `ExtraTriggerDispatcher.dispatch()` |
+| 5 | HyExtras editor translations are merged into `I18nModule` from `Server.Languages.en-US/server.lang` at startup | `I18nDefaultsLoader.load()` |
 | 6 | Editor dropdowns use `EnumCodec.documentKey(...)` for lowercase JSON values and readable `.option.*` language labels | `CodecHelper.enumField()` / `optEnum()` |
 
 ## 14. Remaining Watch Items
