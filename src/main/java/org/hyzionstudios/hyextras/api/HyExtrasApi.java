@@ -1,19 +1,30 @@
 package org.hyzionstudios.hyextras.api;
 
-import com.hypixel.hytale.protocol.ClientCameraView;
-import com.hypixel.hytale.protocol.FormattedMessage;
-import com.hypixel.hytale.protocol.packets.camera.SetServerCamera;
-import com.hypixel.hytale.protocol.packets.interface_.Notification;
-import com.hypixel.hytale.protocol.packets.interface_.NotificationStyle;
-import com.hypixel.hytale.protocol.packets.interface_.ShowEventTitle;
+import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.hyzionstudios.hyextras.HyExtrasPlugin;
-import org.hyzionstudios.hyextras.action.SetCameraAction;
+import org.hyzionstudios.hyextras.floatingitems.FloatingItemInstance;
+import org.hyzionstudios.hyextras.floatingitems.FloatingItemResult;
+import org.hyzionstudios.hyextras.floatingitems.FloatingItemTuning;
+import org.hyzionstudios.hyextras.imageicons.ImageIconAttachment;
+import org.hyzionstudios.hyextras.imageicons.ImageIconDefinition;
+import org.hyzionstudios.hyextras.imageicons.ImageIconProviderRegistration;
+import org.hyzionstudios.hyextras.imageicons.ImageIconResult;
+import org.hyzionstudios.hyextras.imageicons.ImageIconTuning;
+import org.hyzionstudios.hyextras.packetapi.PacketCameraMode;
+import org.hyzionstudios.hyextras.tagnpc.TagNpcEntityState;
+import org.hyzionstudios.hyextras.tagnpc.TagNpcResult;
+import org.hyzionstudios.hyextras.triggerextras.action.SetCameraAction;
 import org.hyzionstudios.hyextras.util.RichText;
 import org.hyzionstudios.hyextras.util.RuleEvaluationContext;
 import org.hyzionstudios.hyextras.util.RuleEvaluator;
+import org.joml.Vector3d;
 
 import javax.annotation.Nullable;
+import java.net.URI;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -187,7 +198,7 @@ public final class HyExtrasApi {
      * or a force-allow volume policy prevents the hide.
      */
     public boolean hidePlayerFrom(UUID viewer, UUID target, boolean usePackets) {
-        return plugin().getVisibilityPolicyService().hidePlayer(viewer, target, usePackets);
+        return plugin().getPacketApi().hidePlayer(viewer, target, usePackets);
     }
 
     /** Username overload for {@link #hidePlayerFrom(UUID, UUID, boolean)}. */
@@ -199,7 +210,7 @@ public final class HyExtrasApi {
 
     /** Removes an explicit hide override and sends a show packet when policy allows it. */
     public boolean showPlayerTo(UUID viewer, UUID target, boolean usePackets) {
-        return plugin().getVisibilityPolicyService().showPlayer(viewer, target, usePackets);
+        return plugin().getPacketApi().showPlayer(viewer, target, usePackets);
     }
 
     /** Username overload for {@link #showPlayerTo(UUID, UUID, boolean)}. */
@@ -211,27 +222,27 @@ public final class HyExtrasApi {
 
     /** Returns the effective visibility result after volume policy and explicit overrides. */
     public boolean isPlayerHiddenFrom(UUID viewer, UUID target) {
-        return plugin().getVisibilityPolicyService().shouldHidePlayer(viewer, target);
+        return plugin().getPacketApi().shouldHidePlayer(viewer, target);
     }
 
     /** Records a best-effort non-player entity hide by entity UUID for packet filtering. */
     public void hideEntityFrom(UUID viewer, UUID entity) {
-        plugin().getVisibilityPolicyService().hideEntity(viewer, entity);
+        plugin().getPacketApi().hideEntity(viewer, entity);
     }
 
     /** Clears a best-effort non-player entity hide by entity UUID. */
     public void showEntityTo(UUID viewer, UUID entity) {
-        plugin().getVisibilityPolicyService().showEntity(viewer, entity);
+        plugin().getPacketApi().showEntity(viewer, entity);
     }
 
     /** Returns explicit UUIDs hidden from this viewer, before volume policy is applied. */
     public Set<UUID> snapshotHiddenPlayers(UUID viewer) {
-        return plugin().getPlayerOverrideService().snapshotHidden(viewer);
+        return plugin().getPacketApi().snapshotHiddenPlayers(viewer);
     }
 
     /** Clears explicit hide overrides for this viewer. Volume policy may still hide players. */
     public void clearHiddenPlayers(UUID viewer) {
-        plugin().getPlayerOverrideService().clearAll(viewer);
+        plugin().getPacketApi().clearHiddenPlayers(viewer, false);
     }
 
     /** Protects a player from supported NPC target memory until explicitly cleared. */
@@ -275,39 +286,23 @@ public final class HyExtrasApi {
             float durationSeconds,
             float fadeInSeconds,
             float fadeOutSeconds) {
-        PlayerRef ref = plugin().getOnlinePlayerRef(player);
-        if (ref == null) return false;
-        FormattedMessage primary = RichText.toFormattedMessage(title);
-        FormattedMessage secondary = subtitle != null && !subtitle.isBlank()
-                ? RichText.toFormattedMessage(subtitle)
-                : null;
-        ref.getPacketHandler().write(new ShowEventTitle(
-                fadeInSeconds, fadeOutSeconds, durationSeconds, "", false, primary, secondary));
-        return true;
+        return plugin().getPacketApi().sendTitle(
+                player,
+                title,
+                subtitle,
+                durationSeconds,
+                fadeInSeconds,
+                fadeOutSeconds);
     }
 
     /** Sends an action-bar style notification to an online player. Returns false if offline. */
     public boolean sendActionBar(UUID player, String message) {
-        PlayerRef ref = plugin().getOnlinePlayerRef(player);
-        if (ref == null) return false;
-        Notification notification = new Notification();
-        notification.message = RichText.toFormattedMessage(message);
-        notification.style = NotificationStyle.Default;
-        ref.getPacketHandler().write(notification);
-        return true;
+        return plugin().getPacketApi().sendActionBar(player, message);
     }
 
     /** Sets an online player's camera mode. Returns false if offline. */
     public boolean setCamera(UUID player, SetCameraAction.CameraMode mode, boolean locked) {
-        PlayerRef ref = plugin().getOnlinePlayerRef(player);
-        if (ref == null) return false;
-        SetServerCamera packet = new SetServerCamera();
-        packet.clientCameraView = mode == SetCameraAction.CameraMode.THIRD_PERSON
-                ? ClientCameraView.ThirdPerson
-                : ClientCameraView.FirstPerson;
-        packet.isLocked = locked && mode != SetCameraAction.CameraMode.RESET;
-        ref.getPacketHandler().write(packet);
-        return true;
+        return plugin().getPacketApi().setCamera(player, toPacketCameraMode(mode), locked);
     }
 
     /** Resets an online player's camera to first person and unlocked. */
@@ -333,11 +328,247 @@ public final class HyExtrasApi {
                 plugin().getActiveVolumesForPlayer(player)));
     }
 
+    /** Registers a provider-owned local ImageIcons asset folder. */
+    public ImageIconResult registerImageIconProvider(String providerId, Path assetsPath) {
+        return plugin().getImageIconService().registerProvider(providerId, assetsPath);
+    }
+
+    /** Registers and caches a remote PNG/GIF icon under a provider-scoped icon id. */
+    public ImageIconResult registerRemoteImageIcon(String providerId, String iconId, URI remoteUri) {
+        return plugin().getImageIconService().registerRemoteIcon(providerId, iconId, remoteUri);
+    }
+
+    /** Reloads a single provider's local and remote icons. */
+    public ImageIconResult reloadImageIconProvider(String providerId) {
+        return plugin().getImageIconService().reloadProvider(providerId);
+    }
+
+    /** Unregisters one provider and clears only that provider's active icon attachments. */
+    public ImageIconResult unregisterImageIconProvider(String providerId) {
+        return plugin().getImageIconService().unregisterProvider(providerId);
+    }
+
+    /** Attaches a provider-scoped icon to an entity UUID using runtime-only packet state. */
+    public ImageIconResult attachImageIcon(UUID target, String providerId, String iconId, ImageIconTuning tuning) {
+        return plugin().getImageIconService().attachIcon(target, providerId, iconId, tuning);
+    }
+
+    /** Attaches a provider-scoped icon to a player UUID using runtime-only packet state. */
+    public ImageIconResult attachImageIconToPlayer(
+            UUID targetPlayer,
+            String providerId,
+            String iconId,
+            ImageIconTuning tuning) {
+        return plugin().getImageIconService().attachIconToPlayer(targetPlayer, providerId, iconId, tuning);
+    }
+
+    /** Clears one ImageIcons attachment by attachment UUID. */
+    public boolean clearImageIcon(UUID attachmentId) {
+        return plugin().getImageIconService().clearIcon(attachmentId);
+    }
+
+    /** Clears all ImageIcons attachments targeting the given entity or player UUID. */
+    public int clearImageIcons(UUID target) {
+        return plugin().getImageIconService().clearIcons(target);
+    }
+
+    /** Returns registered ImageIcons providers keyed by provider id. */
+    public Map<String, ImageIconProviderRegistration> snapshotImageIconProviders() {
+        return plugin().getImageIconService().snapshotProviders();
+    }
+
+    /** Returns loaded ImageIcons definitions for one provider keyed by provider-scoped icon id. */
+    public Map<String, ImageIconDefinition> snapshotImageIcons(String providerId) {
+        return plugin().getImageIconService().snapshotIcons(providerId);
+    }
+
+    /** Returns all loaded ImageIcons definitions grouped by provider id. */
+    public Map<String, Map<String, ImageIconDefinition>> snapshotImageIcons() {
+        return plugin().getImageIconService().snapshotIcons();
+    }
+
+    /** Returns active runtime ImageIcons attachments keyed by attachment UUID. */
+    public Map<UUID, ImageIconAttachment> snapshotImageIconAttachments() {
+        return plugin().getImageIconService().snapshotAttachments();
+    }
+
+    /** Returns load errors grouped by provider id. */
+    public Map<String, List<String>> snapshotImageIconLoadErrors() {
+        return plugin().getImageIconService().snapshotLoadErrors();
+    }
+
+    /** Adds a runtime TagNPC tag to any UUID-backed entity. */
+    public TagNpcResult addEntityTag(UUID entity, String tag) {
+        return plugin().getTagNpcService().addTag(entity, tag);
+    }
+
+    /** Removes a runtime TagNPC tag from any UUID-backed entity. */
+    public TagNpcResult removeEntityTag(UUID entity, String tag) {
+        return plugin().getTagNpcService().removeTag(entity, tag);
+    }
+
+    /** Returns whether a UUID-backed entity currently has the TagNPC tag. */
+    public boolean hasEntityTag(UUID entity, String tag) {
+        return plugin().getTagNpcService().hasTag(entity, tag);
+    }
+
+    /** Returns a defensive snapshot of runtime TagNPC tags for an entity. */
+    public Set<String> snapshotEntityTags(UUID entity) {
+        return plugin().getTagNpcService().snapshotTags(entity);
+    }
+
+    /** Clears runtime TagNPC tags for an entity. */
+    public TagNpcResult clearEntityTags(UUID entity) {
+        return plugin().getTagNpcService().clearTags(entity);
+    }
+
+    /** Sets a runtime TagNPC variable on any UUID-backed entity. */
+    public TagNpcResult setEntityVariable(UUID entity, String key, Object value) {
+        return plugin().getTagNpcService().setVariable(entity, key, value);
+    }
+
+    /** Returns a raw runtime TagNPC entity variable, or null if missing. */
+    @Nullable
+    public Object getEntityVariable(UUID entity, String key) {
+        return plugin().getTagNpcService().getVariable(entity, key);
+    }
+
+    /** Returns a runtime TagNPC entity variable as a string, or null if missing. */
+    @Nullable
+    public String getEntityVariableString(UUID entity, String key) {
+        return plugin().getTagNpcService().getVariableString(entity, key);
+    }
+
+    /** Atomically increments a runtime TagNPC numeric variable and returns the new value. */
+    public long incrementEntityVariable(UUID entity, String key, long delta) {
+        return plugin().getTagNpcService().incrementVariable(entity, key, delta);
+    }
+
+    /** Removes one runtime TagNPC entity variable. */
+    public TagNpcResult removeEntityVariable(UUID entity, String key) {
+        return plugin().getTagNpcService().removeVariable(entity, key);
+    }
+
+    /** Returns a defensive snapshot of runtime TagNPC variables for an entity. */
+    public Map<String, Object> snapshotEntityVariables(UUID entity) {
+        return plugin().getTagNpcService().snapshotVariables(entity);
+    }
+
+    /** Clears runtime TagNPC variables for an entity. */
+    public TagNpcResult clearEntityVariables(UUID entity) {
+        return plugin().getTagNpcService().clearVariables(entity);
+    }
+
+    /** Hides a UUID-backed entity from one viewer through PacketAPI entity visibility state. */
+    public TagNpcResult hideEntityFromViewer(UUID viewer, UUID entity) {
+        return plugin().getTagNpcService().hideEntityFromViewer(viewer, entity);
+    }
+
+    /** Shows a UUID-backed entity to one viewer by clearing PacketAPI entity visibility state. */
+    public TagNpcResult showEntityToViewer(UUID viewer, UUID entity) {
+        return plugin().getTagNpcService().showEntityToViewer(viewer, entity);
+    }
+
+    /** Returns whether TagNPC/PacketAPI state currently hides an entity from a viewer. */
+    public boolean isEntityHiddenFromViewer(UUID viewer, UUID entity) {
+        return plugin().getTagNpcService().isEntityHiddenFromViewer(viewer, entity);
+    }
+
+    /** Returns UUIDs of entities currently tracked with the given TagNPC tag. */
+    public Set<UUID> snapshotTaggedEntities(String tag) {
+        return plugin().getTagNpcService().snapshotTaggedEntities(tag);
+    }
+
+    /** Returns a snapshot of one TagNPC entity state, or null when untracked. */
+    @Nullable
+    public TagNpcEntityState snapshotTagNpcState(UUID entity) {
+        return plugin().getTagNpcService().snapshotState(entity);
+    }
+
+    /** Returns all tracked TagNPC entity states keyed by entity UUID. */
+    public Map<UUID, TagNpcEntityState> snapshotAllTagNpcStates() {
+        return plugin().getTagNpcService().snapshotAllStates();
+    }
+
+    /** Returns the nearest indexed non-player entity UUID to an online player within radius, or null. */
+    @Nullable
+    public UUID findNearestTagNpcEntity(UUID player, double radius) {
+        return plugin().getTagNpcService().findClosestEntityToPlayer(player, radius);
+    }
+
+    /** Creates or replaces a decorative non-pickup floating item at an explicit store position. */
+    public FloatingItemResult createFloatingItem(
+            String id,
+            ItemStack item,
+            Store<EntityStore> store,
+            Vector3d position,
+            FloatingItemTuning tuning,
+            boolean persistent) {
+        return plugin().getFloatingItemService()
+                .createFloatingItem(id, item, store, position, tuning, persistent);
+    }
+
+    /** Creates or replaces a decorative non-pickup floating item at an online player's position. */
+    public FloatingItemResult createFloatingItemAtPlayer(
+            String id,
+            UUID player,
+            ItemStack item,
+            FloatingItemTuning tuning,
+            boolean persistent) {
+        return plugin().getFloatingItemService()
+                .createFloatingItemAtPlayer(id, player, item, tuning, persistent);
+    }
+
+    /** Removes a floating item by id. */
+    public FloatingItemResult removeFloatingItem(String id) {
+        return plugin().getFloatingItemService().removeFloatingItem(id);
+    }
+
+    /** Sets whether a floating item is intangible. */
+    public FloatingItemResult setFloatingItemIntangible(String id, boolean intangible) {
+        return plugin().getFloatingItemService().setFloatingItemIntangible(id, intangible);
+    }
+
+    /** Moves a floating item to a new explicit store position. */
+    public FloatingItemResult moveFloatingItem(String id, Store<EntityStore> store, Vector3d position) {
+        return plugin().getFloatingItemService().moveFloatingItem(id, store, position);
+    }
+
+    /** Returns a snapshot of one floating item, or null when absent. */
+    @Nullable
+    public FloatingItemInstance snapshotFloatingItem(String id) {
+        return plugin().getFloatingItemService().snapshotFloatingItem(id);
+    }
+
+    /** Returns all floating item snapshots keyed by id. */
+    public Map<String, FloatingItemInstance> snapshotFloatingItems() {
+        return plugin().getFloatingItemService().snapshotFloatingItems();
+    }
+
+    /** Returns floating items near a position in the same store. */
+    public Map<String, FloatingItemInstance> snapshotFloatingItemsNear(
+            Store<EntityStore> store,
+            Vector3d origin,
+            double radius) {
+        return plugin().getFloatingItemService().snapshotFloatingItemsNear(store, origin, radius);
+    }
+
     private static HyExtrasPlugin plugin() {
         HyExtrasPlugin plugin = HyExtrasPlugin.get();
         if (plugin == null) {
             throw new IllegalStateException("HyExtras is not running");
         }
         return plugin;
+    }
+
+    private static PacketCameraMode toPacketCameraMode(SetCameraAction.CameraMode mode) {
+        if (mode == null) {
+            return PacketCameraMode.FIRST_PERSON;
+        }
+        return switch (mode) {
+            case FIRST_PERSON -> PacketCameraMode.FIRST_PERSON;
+            case THIRD_PERSON -> PacketCameraMode.THIRD_PERSON;
+            case RESET -> PacketCameraMode.RESET;
+        };
     }
 }
