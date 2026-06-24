@@ -50,6 +50,11 @@ public final class CooldownService {
         if (map != null) map.remove(name);
     }
 
+    /** Removes every cooldown entry for a player. */
+    public void clearAll(UUID player) {
+        store.remove(player);
+    }
+
     /** Called on player disconnect — removes all cooldown state for this player. */
     public void clearPlayer(UUID player) {
         store.remove(player);
