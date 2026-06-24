@@ -68,7 +68,7 @@ public final class PlayerVariableService {
     /** Returns an unmodifiable snapshot of all variables for a player (for debug commands). */
     public Map<String, Object> snapshot(UUID player) {
         Map<String, Object> m = store.get(player);
-        return m == null ? Collections.emptyMap() : Collections.unmodifiableMap(m);
+        return m == null ? Collections.emptyMap() : Collections.unmodifiableMap(Map.copyOf(m));
     }
 
     /** Returns true if any variable is set for this player. */
