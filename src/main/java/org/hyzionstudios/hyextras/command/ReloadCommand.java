@@ -16,6 +16,7 @@ public class ReloadCommand extends AbstractAsyncCommand {
 
     public ReloadCommand() {
         super("reload", "Reload the HyExtras configuration file");
+        requirePermission("hyextras.reload");
     }
 
     @Override
