@@ -9,6 +9,7 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.ResourceType;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.server.core.entity.UUIDComponent;
 import com.hypixel.hytale.server.core.entity.entities.player.HiddenPlayersManager;
 import com.hypixel.hytale.server.core.modules.time.WorldTimeResource;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -54,12 +55,16 @@ public final class TriggerVolumeApiAdapter {
 
     /**
      * Returns the UUID of the triggering entity by reading its {@link PlayerRef} component,
-     * or {@code null} if the entity is not a player (e.g. NPC, projectile).
+     * then falling back to the entity UUID component for NPCs, mobs, and other entities.
      */
     @Nullable
     public static UUID getEntityUuid(TriggerContext ctx) {
         PlayerRef pr = ctx.getStore().getComponent(ctx.getEntityRef(), PlayerRef.getComponentType());
-        return pr != null ? pr.getUuid() : null;
+        if (pr != null) {
+            return pr.getUuid();
+        }
+        UUIDComponent uuidComponent = ctx.getStore().getComponent(ctx.getEntityRef(), UUIDComponent.getComponentType());
+        return uuidComponent != null ? uuidComponent.getUuid() : null;
     }
 
     /**
