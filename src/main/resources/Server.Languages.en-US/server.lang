@@ -9,10 +9,14 @@ customUI.triggerVolumeEffectEditor.effectType.run_command = Run Command
 customUI.triggerVolumeEffectEditor.effectType.set_variable = Set Variable
 customUI.triggerVolumeEffectEditor.effectType.add_variable = Add Variable
 customUI.triggerVolumeEffectEditor.effectType.increment_variable = Increment Variable
+customUI.triggerVolumeEffectEditor.effectType.calculate_variable = Calculate Variable
 customUI.triggerVolumeEffectEditor.effectType.remove_variable = Remove Variable
 customUI.triggerVolumeEffectEditor.effectType.apply_cooldown = Apply Cooldown
 customUI.triggerVolumeEffectEditor.effectType.trigger_named_volume = Trigger Named Volume
 customUI.triggerVolumeEffectEditor.effectType.remove_item = Remove Item
+customUI.triggerVolumeEffectEditor.effectType.give_item_reward = Give Item Reward
+customUI.triggerVolumeEffectEditor.effectType.run_reward_command = Run Reward Command
+customUI.triggerVolumeEffectEditor.effectType.send_reward_message = Send Reward Message
 customUI.triggerVolumeEffectEditor.effectType.send_title = Send Title / Action Bar
 customUI.triggerVolumeEffectEditor.effectType.send_rich_message = Send Rich Message
 customUI.triggerVolumeEffectEditor.effectType.toggle_trigger_enabled = Toggle Trigger Enabled
@@ -22,11 +26,22 @@ customUI.triggerVolumeEffectEditor.effectType.clear_player_overrides = Clear Pla
 customUI.triggerVolumeEffectEditor.effectType.set_volume_tag = Set Volume Tag
 customUI.triggerVolumeEffectEditor.effectType.remove_volume_tag = Remove Volume Tag
 customUI.triggerVolumeEffectEditor.effectType.cancel_interaction = Cancel Interaction
+customUI.triggerVolumeEffectEditor.effectType.set_volume_interactable = Set Volume Interactable
+customUI.triggerVolumeEffectEditor.effectType.clear_volume_interactable = Clear Volume Interactable
 customUI.triggerVolumeEffectEditor.effectType.add_tag = Add Player Tag
 customUI.triggerVolumeEffectEditor.effectType.remove_tag = Remove Player Tag
 customUI.triggerVolumeEffectEditor.effectType.block_volume_interactions = Block Volume Interactions
 customUI.triggerVolumeEffectEditor.effectType.allow_volume_interactions = Allow Volume Interactions
 customUI.triggerVolumeEffectEditor.effectType.set_camera = Set Camera Mode
+customUI.triggerVolumeEffectEditor.effectType.push_back_player = Push Back Player
+customUI.triggerVolumeEffectEditor.effectType.set_voice_activity = Set Voice Activity
+customUI.triggerVolumeEffectEditor.effectType.tag_npc_add_tag = Tag NPC Add Tag
+customUI.triggerVolumeEffectEditor.effectType.tag_npc_remove_tag = Tag NPC Remove Tag
+customUI.triggerVolumeEffectEditor.effectType.tag_npc_set_variable = Tag NPC Set Variable
+customUI.triggerVolumeEffectEditor.effectType.tag_npc_add_variable = Tag NPC Add Variable
+customUI.triggerVolumeEffectEditor.effectType.tag_npc_remove_variable = Tag NPC Remove Variable
+customUI.triggerVolumeEffectEditor.effectType.tag_npc_hide_entity = Tag NPC Hide Entity
+customUI.triggerVolumeEffectEditor.effectType.tag_npc_show_entity = Tag NPC Show Entity
 
 # =====================================================================
 # Condition display names
@@ -39,6 +54,10 @@ customUI.triggerVolumeEffectEditor.conditionType.player_hidden = Player Hidden
 customUI.triggerVolumeEffectEditor.conditionType.volume_has_tag = Volume Has Tag
 customUI.triggerVolumeEffectEditor.conditionType.has_tag = Has Player Tag
 customUI.triggerVolumeEffectEditor.conditionType.interaction_type = Interaction Type
+customUI.triggerVolumeEffectEditor.conditionType.math_condition = Math Condition
+customUI.triggerVolumeEffectEditor.conditionType.tag_npc_has_tag = Tag NPC Has Tag
+customUI.triggerVolumeEffectEditor.conditionType.tag_npc_variable_condition = Tag NPC Variable Condition
+customUI.triggerVolumeEffectEditor.conditionType.tag_npc_visible_condition = Tag NPC Visible Condition
 
 # =====================================================================
 # run_command
@@ -79,6 +98,16 @@ customUI.triggerVolumeEffectEditor.field.add_variable.Delta = Amount
 customUI.triggerVolumeEffectEditor.field.add_variable.Delta.tooltip = Amount to add each time this effect fires. Use a negative value (e.g. -1) to subtract. Defaults to 1 if omitted.
 
 # =====================================================================
+# calculate_variable
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.calculate_variable.Key = Variable Name
+customUI.triggerVolumeEffectEditor.field.calculate_variable.Key.tooltip = Per-player variable that receives the formula result. Whole-number results are stored as integers; fractional results are stored as decimals.
+customUI.triggerVolumeEffectEditor.field.calculate_variable.Key.placeholder = e.g. score
+customUI.triggerVolumeEffectEditor.field.calculate_variable.Formula = Formula
+customUI.triggerVolumeEffectEditor.field.calculate_variable.Formula.tooltip = Arithmetic formula using +, -, *, /, %, parentheses, and placeholders like {variable:score}, {activeVolumeCount}, {currentVolumeTag:bonus}, {volumeTag:arena:bonus}, or {volumeActive:arena}.
+customUI.triggerVolumeEffectEditor.field.calculate_variable.Formula.placeholder = e.g. {variable:score} + ({volumeTag:arena:bonus} * 2)
+
+# =====================================================================
 # remove_variable
 # =====================================================================
 customUI.triggerVolumeEffectEditor.field.remove_variable.Key = Variable Name
@@ -115,6 +144,43 @@ customUI.triggerVolumeEffectEditor.field.remove_item.Location.placeholder = inve
 customUI.triggerVolumeEffectEditor.field.remove_item.Location.option.inventory = Inventory
 customUI.triggerVolumeEffectEditor.field.remove_item.Location.option.hotbar = Hotbar
 customUI.triggerVolumeEffectEditor.field.remove_item.Location.option.in_hand = In Hand
+
+# =====================================================================
+# give_item_reward
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.give_item_reward.Item = Item
+customUI.triggerVolumeEffectEditor.field.give_item_reward.Item.tooltip = ItemStack reward to add to the triggering player's inventory. Uses Hytale's item stack editor/browser when available.
+customUI.triggerVolumeEffectEditor.field.give_item_reward.Message = Reward Message
+customUI.triggerVolumeEffectEditor.field.give_item_reward.Message.tooltip = Optional chat message after the item is awarded. Supports HyExtras placeholders and color codes.
+customUI.triggerVolumeEffectEditor.field.give_item_reward.Message.placeholder = e.g. &aReward: {player} received a treasure!
+
+# =====================================================================
+# run_reward_command
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.run_reward_command.Command = Command
+customUI.triggerVolumeEffectEditor.field.run_reward_command.Command.tooltip = Reward command to run as the triggering player. Supports HyExtras placeholders. Do not include a leading slash.
+customUI.triggerVolumeEffectEditor.field.run_reward_command.Command.placeholder = e.g. give {player} hytale:gold_coin 5
+customUI.triggerVolumeEffectEditor.field.run_reward_command.DebugName = Debug Name
+customUI.triggerVolumeEffectEditor.field.run_reward_command.DebugName.tooltip = Optional label shown in server logs when this reward command fires.
+customUI.triggerVolumeEffectEditor.field.run_reward_command.DebugName.placeholder = e.g. coin-reward
+
+# =====================================================================
+# send_reward_message
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.send_reward_message.Message = Message
+customUI.triggerVolumeEffectEditor.field.send_reward_message.Message.tooltip = Reward message template. Supports HyExtras placeholders and color codes.
+customUI.triggerVolumeEffectEditor.field.send_reward_message.Message.placeholder = e.g. &e+{volumeTag:reward_room:coins} coins
+customUI.triggerVolumeEffectEditor.field.send_reward_message.SecondaryMessage = Secondary Message
+customUI.triggerVolumeEffectEditor.field.send_reward_message.SecondaryMessage.tooltip = Optional subtitle when Display is title.
+customUI.triggerVolumeEffectEditor.field.send_reward_message.SecondaryMessage.placeholder = e.g. Nice work, {player}!
+customUI.triggerVolumeEffectEditor.field.send_reward_message.Display = Display
+customUI.triggerVolumeEffectEditor.field.send_reward_message.Display.tooltip = Where to show the reward message: chat, action_bar, or title.
+customUI.triggerVolumeEffectEditor.field.send_reward_message.Display.placeholder = chat / action_bar / title
+customUI.triggerVolumeEffectEditor.field.send_reward_message.Display.option.chat = Chat
+customUI.triggerVolumeEffectEditor.field.send_reward_message.Display.option.action_bar = Action Bar
+customUI.triggerVolumeEffectEditor.field.send_reward_message.Display.option.title = Title
+customUI.triggerVolumeEffectEditor.field.send_reward_message.Duration = Duration (seconds)
+customUI.triggerVolumeEffectEditor.field.send_reward_message.Duration.tooltip = Title display duration. Ignored for chat and action bar. Defaults to 3 seconds.
 
 # =====================================================================
 # send_title
@@ -161,8 +227,19 @@ customUI.triggerVolumeEffectEditor.field.toggle_trigger_enabled.Mode.option.togg
 customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetPlayer = Target Player
 customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetPlayer.tooltip = Username of the player to hide from the triggering player's view. Only the triggering player is affected — others still see the target normally. Requires advancedPacketActions=true in config to send the client visibility packet.
 customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetPlayer.placeholder = e.g. PlayerB
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetSelector = Target Selector
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetSelector.tooltip = What to hide: "player" uses TargetPlayer, "players" applies TargetRule to all online players, and "entities" is reserved for developer API entity visibility.
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetSelector.option.player = Target Player
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetSelector.option.players = Matching Players
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetSelector.option.entities = Matching Entities
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.ViewerRule = Viewer Rule
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.ViewerRule.tooltip = Optional predicates that must match the triggering viewer, e.g. {hasTag:story_a} or {!variable:partyId}.
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetRule = Target Rule
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.TargetRule.tooltip = Optional predicates that must match the target player when TargetSelector is players, e.g. {hasTag:stealthed}.
 customUI.triggerVolumeEffectEditor.field.player_hide_entity.UsePackets = Use Packets
 customUI.triggerVolumeEffectEditor.field.player_hide_entity.UsePackets.tooltip = Whether to send the client-side hide packet. Set to false to record the hidden state server-side only (for use with player_hidden conditions) without visually hiding the target.
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.PreventTargeting = Prevent Targeting
+customUI.triggerVolumeEffectEditor.field.player_hide_entity.PreventTargeting.tooltip = Best-effort NPC targeting guard. Unsupported entities are ignored and only logged in debug mode.
 
 # =====================================================================
 # player_show_entity
@@ -170,8 +247,19 @@ customUI.triggerVolumeEffectEditor.field.player_hide_entity.UsePackets.tooltip =
 customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetPlayer = Target Player
 customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetPlayer.tooltip = Username of the player to reveal to the triggering player. Reverses a previous player_hide_entity for this viewer/target pair.
 customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetPlayer.placeholder = e.g. PlayerB
+customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetSelector = Target Selector
+customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetSelector.tooltip = What to reveal: "player" uses TargetPlayer, "players" applies TargetRule to all online players, and "entities" is reserved for developer API entity visibility.
+customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetSelector.option.player = Target Player
+customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetSelector.option.players = Matching Players
+customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetSelector.option.entities = Matching Entities
+customUI.triggerVolumeEffectEditor.field.player_show_entity.ViewerRule = Viewer Rule
+customUI.triggerVolumeEffectEditor.field.player_show_entity.ViewerRule.tooltip = Optional predicates that must match the triggering viewer.
+customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetRule = Target Rule
+customUI.triggerVolumeEffectEditor.field.player_show_entity.TargetRule.tooltip = Optional predicates that must match the target player when TargetSelector is players.
 customUI.triggerVolumeEffectEditor.field.player_show_entity.UsePackets = Use Packets
 customUI.triggerVolumeEffectEditor.field.player_show_entity.UsePackets.tooltip = Whether to send the client-side reveal packet. Should match the setting used in the corresponding player_hide_entity.
+customUI.triggerVolumeEffectEditor.field.player_show_entity.PreventTargeting = Prevent Targeting
+customUI.triggerVolumeEffectEditor.field.player_show_entity.PreventTargeting.tooltip = Best-effort NPC targeting guard. Unsupported entities are ignored and only logged in debug mode.
 
 # =====================================================================
 # clear_player_overrides
@@ -203,6 +291,43 @@ customUI.triggerVolumeEffectEditor.field.remove_volume_tag.Key.tooltip = Name of
 customUI.triggerVolumeEffectEditor.field.remove_volume_tag.Key.placeholder = e.g. locked
 
 # cancel_interaction has no configurable fields.
+
+# =====================================================================
+# set_volume_interactable
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.VolumeId = Volume ID
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.VolumeId.tooltip = Volume to mark as interactable at runtime. Leave blank to target the current volume.
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.VolumeId.placeholder = e.g. treasure_chest_zone
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Message = Interaction Message
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Message.tooltip = Prompt shown through the action bar when the player interacts. Use an interactionHints.* lang key such as interactionHints.open, or direct text with {key}, {name}, and {action}.
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Message.placeholder = interactionHints.generic
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Action = Action Text
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Action.tooltip = Text inserted into {action} for custom messages and used as the synthetic tag value. Defaults to "interact".
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Action.placeholder = open the chest
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Key = Key Label
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Key.tooltip = Text inserted into {key} for interactionHints.* messages. Defaults to "Use".
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Key.placeholder = E
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Name = Target Name
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Name.tooltip = Text inserted into {name} for interaction hints such as interactionHints.open or interactionHints.pickup.
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.Name.placeholder = chest
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.InteractionType = Interaction Type
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.InteractionType.tooltip = Optional interaction type required to activate this prompt/dispatch, such as use, primary, or secondary.
+customUI.triggerVolumeEffectEditor.field.set_volume_interactable.InteractionType.placeholder = use
+
+# =====================================================================
+# clear_volume_interactable
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.clear_volume_interactable.VolumeId = Volume ID
+customUI.triggerVolumeEffectEditor.field.clear_volume_interactable.VolumeId.tooltip = Runtime interactable override to clear. Leave blank to target the current volume.
+customUI.triggerVolumeEffectEditor.field.clear_volume_interactable.VolumeId.placeholder = e.g. treasure_chest_zone
+
+# =====================================================================
+# push_back_player
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.push_back_player.Distance = Distance
+customUI.triggerVolumeEffectEditor.field.push_back_player.Distance.tooltip = How far to push the triggering player away from the interacted block, or from the volume center when no block was involved. Defaults to 1.25.
+customUI.triggerVolumeEffectEditor.field.push_back_player.YOffset = Y Offset
+customUI.triggerVolumeEffectEditor.field.push_back_player.YOffset.tooltip = Optional vertical offset added to the push target. Leave blank for 0.0.
 
 # =====================================================================
 # add_tag
@@ -255,6 +380,19 @@ customUI.triggerVolumeEffectEditor.field.set_camera.Mode.option.third_person = T
 customUI.triggerVolumeEffectEditor.field.set_camera.Mode.option.reset = Reset
 customUI.triggerVolumeEffectEditor.field.set_camera.Locked = Locked
 customUI.triggerVolumeEffectEditor.field.set_camera.Locked.tooltip = If true, the player cannot manually switch camera perspective while in this mode. Has no effect when Mode is "reset". Defaults to false.
+
+# =====================================================================
+# set_voice_activity
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.set_voice_activity.Mode = Mode
+customUI.triggerVolumeEffectEditor.field.set_voice_activity.Mode.tooltip = Voice activity action: mute, unmute, or toggle. Defaults to the triggering player unless TargetPlayer is set.
+customUI.triggerVolumeEffectEditor.field.set_voice_activity.Mode.placeholder = mute / unmute / toggle
+customUI.triggerVolumeEffectEditor.field.set_voice_activity.Mode.option.mute = Mute
+customUI.triggerVolumeEffectEditor.field.set_voice_activity.Mode.option.unmute = Unmute
+customUI.triggerVolumeEffectEditor.field.set_voice_activity.Mode.option.toggle = Toggle
+customUI.triggerVolumeEffectEditor.field.set_voice_activity.TargetPlayer = Target Player
+customUI.triggerVolumeEffectEditor.field.set_voice_activity.TargetPlayer.tooltip = Optional username to mute/unmute instead of the triggering player. Leave blank for the triggering player.
+customUI.triggerVolumeEffectEditor.field.set_voice_activity.TargetPlayer.placeholder = e.g. PlayerB
 
 # =====================================================================
 # variable_condition
@@ -365,3 +503,117 @@ customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.dod
 customUI.triggerVolumeEffectEditor.field.interaction_type.Interaction.option.game_mode_swap = Game Mode Swap
 customUI.triggerVolumeEffectEditor.field.interaction_type.Invert = Invert
 customUI.triggerVolumeEffectEditor.field.interaction_type.Invert.tooltip = If true, passes when the interaction type does NOT match. For example, Interaction=primary with Invert=true passes for all interactions except left-click attacks.
+
+# =====================================================================
+# math_condition
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.math_condition.Formula = Formula
+customUI.triggerVolumeEffectEditor.field.math_condition.Formula.tooltip = Arithmetic formula to evaluate. Supports +, -, *, /, %, parentheses, and HyExtras placeholders.
+customUI.triggerVolumeEffectEditor.field.math_condition.Formula.placeholder = e.g. {variable:score} + {activeVolumeCount}
+customUI.triggerVolumeEffectEditor.field.math_condition.Operator = Operator
+customUI.triggerVolumeEffectEditor.field.math_condition.Operator.tooltip = Numeric comparison against Value.
+customUI.triggerVolumeEffectEditor.field.math_condition.Operator.placeholder = greater_than / equals / less_or_equal
+customUI.triggerVolumeEffectEditor.field.math_condition.Operator.option.equals = Equals
+customUI.triggerVolumeEffectEditor.field.math_condition.Operator.option.not_equals = Does Not Equal
+customUI.triggerVolumeEffectEditor.field.math_condition.Operator.option.greater_than = Greater Than
+customUI.triggerVolumeEffectEditor.field.math_condition.Operator.option.less_than = Less Than
+customUI.triggerVolumeEffectEditor.field.math_condition.Operator.option.greater_or_equal = Greater Or Equal
+customUI.triggerVolumeEffectEditor.field.math_condition.Operator.option.less_or_equal = Less Or Equal
+customUI.triggerVolumeEffectEditor.field.math_condition.Value = Compare Formula
+customUI.triggerVolumeEffectEditor.field.math_condition.Value.tooltip = Right-hand numeric formula or value to compare with the Formula result.
+customUI.triggerVolumeEffectEditor.field.math_condition.Value.placeholder = e.g. 10
+
+# =====================================================================
+# TagNPC shared fields
+# =====================================================================
+customUI.triggerVolumeEffectEditor.field.tag_npc_add_tag.Target = Target
+customUI.triggerVolumeEffectEditor.field.tag_npc_add_tag.EntityUuid = Entity UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_add_tag.TargetTag = Target Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_add_tag.Tag = Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_remove_tag.Target = Target
+customUI.triggerVolumeEffectEditor.field.tag_npc_remove_tag.EntityUuid = Entity UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_remove_tag.TargetTag = Target Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_remove_tag.Tag = Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_set_variable.Target = Target
+customUI.triggerVolumeEffectEditor.field.tag_npc_set_variable.EntityUuid = Entity UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_set_variable.TargetTag = Target Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_set_variable.Key = Variable Name
+customUI.triggerVolumeEffectEditor.field.tag_npc_set_variable.Value = Value
+customUI.triggerVolumeEffectEditor.field.tag_npc_add_variable.Target = Target
+customUI.triggerVolumeEffectEditor.field.tag_npc_add_variable.EntityUuid = Entity UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_add_variable.TargetTag = Target Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_add_variable.Key = Variable Name
+customUI.triggerVolumeEffectEditor.field.tag_npc_add_variable.Delta = Delta
+customUI.triggerVolumeEffectEditor.field.tag_npc_remove_variable.Target = Target
+customUI.triggerVolumeEffectEditor.field.tag_npc_remove_variable.EntityUuid = Entity UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_remove_variable.TargetTag = Target Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_remove_variable.Key = Variable Name
+customUI.triggerVolumeEffectEditor.field.tag_npc_hide_entity.Target = Target
+customUI.triggerVolumeEffectEditor.field.tag_npc_hide_entity.EntityUuid = Entity UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_hide_entity.TargetTag = Target Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_hide_entity.ViewerUuid = Viewer UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_show_entity.Target = Target
+customUI.triggerVolumeEffectEditor.field.tag_npc_show_entity.EntityUuid = Entity UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_show_entity.TargetTag = Target Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_show_entity.ViewerUuid = Viewer UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_has_tag.Target = Target
+customUI.triggerVolumeEffectEditor.field.tag_npc_has_tag.EntityUuid = Entity UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_has_tag.TargetTag = Target Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_has_tag.Tag = Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_has_tag.Invert = Invert
+customUI.triggerVolumeEffectEditor.field.tag_npc_variable_condition.Target = Target
+customUI.triggerVolumeEffectEditor.field.tag_npc_variable_condition.EntityUuid = Entity UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_variable_condition.TargetTag = Target Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_variable_condition.Key = Variable Name
+customUI.triggerVolumeEffectEditor.field.tag_npc_variable_condition.Operator = Operator
+customUI.triggerVolumeEffectEditor.field.tag_npc_variable_condition.Value = Value
+customUI.triggerVolumeEffectEditor.field.tag_npc_visible_condition.Target = Target
+customUI.triggerVolumeEffectEditor.field.tag_npc_visible_condition.EntityUuid = Entity UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_visible_condition.TargetTag = Target Tag
+customUI.triggerVolumeEffectEditor.field.tag_npc_visible_condition.ViewerUuid = Viewer UUID
+customUI.triggerVolumeEffectEditor.field.tag_npc_visible_condition.ExpectedVisible = Expected Visible
+
+# =====================================================================
+# FloatingItems
+# =====================================================================
+customUI.triggerVolumeEffectEditor.effectType.floating_item_create = Create Floating Item
+customUI.triggerVolumeEffectEditor.effectType.floating_item_remove = Remove Floating Item
+customUI.triggerVolumeEffectEditor.effectType.floating_item_set_intangible = Set Floating Item Intangible
+customUI.triggerVolumeEffectEditor.effectType.floating_item_move = Move Floating Item
+customUI.triggerVolumeEffectEditor.conditionType.floating_item_exists = Floating Item Exists
+customUI.triggerVolumeEffectEditor.conditionType.floating_item_intangible = Floating Item Intangible
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Id = Floating Item ID
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Item = Item
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Anchor = Anchor
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Anchor.option.triggering_entity = Triggering Entity
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Anchor.option.volume_center = Volume Center
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Anchor.option.block_position = Block Position
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Anchor.option.explicit = Explicit Position
+customUI.triggerVolumeEffectEditor.field.floating_item_create.X = X
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Y = Y
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Z = Z
+customUI.triggerVolumeEffectEditor.field.floating_item_create.OffsetX = Offset X
+customUI.triggerVolumeEffectEditor.field.floating_item_create.OffsetY = Offset Y
+customUI.triggerVolumeEffectEditor.field.floating_item_create.OffsetZ = Offset Z
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Persistent = Persistent
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Intangible = Intangible
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Scale = Scale
+customUI.triggerVolumeEffectEditor.field.floating_item_create.VisibilityRadius = Visibility Radius
+customUI.triggerVolumeEffectEditor.field.floating_item_create.BobAmplitude = Bob Amplitude
+customUI.triggerVolumeEffectEditor.field.floating_item_create.RotationDegreesPerSecond = Rotation Speed
+customUI.triggerVolumeEffectEditor.field.floating_item_create.Priority = Priority
+customUI.triggerVolumeEffectEditor.field.floating_item_remove.Id = Floating Item ID
+customUI.triggerVolumeEffectEditor.field.floating_item_set_intangible.Id = Floating Item ID
+customUI.triggerVolumeEffectEditor.field.floating_item_set_intangible.Intangible = Intangible
+customUI.triggerVolumeEffectEditor.field.floating_item_move.Id = Floating Item ID
+customUI.triggerVolumeEffectEditor.field.floating_item_move.Anchor = Anchor
+customUI.triggerVolumeEffectEditor.field.floating_item_move.X = X
+customUI.triggerVolumeEffectEditor.field.floating_item_move.Y = Y
+customUI.triggerVolumeEffectEditor.field.floating_item_move.Z = Z
+customUI.triggerVolumeEffectEditor.field.floating_item_move.OffsetX = Offset X
+customUI.triggerVolumeEffectEditor.field.floating_item_move.OffsetY = Offset Y
+customUI.triggerVolumeEffectEditor.field.floating_item_move.OffsetZ = Offset Z
+customUI.triggerVolumeEffectEditor.field.floating_item_exists.Id = Floating Item ID
+customUI.triggerVolumeEffectEditor.field.floating_item_exists.Invert = Invert
+customUI.triggerVolumeEffectEditor.field.floating_item_intangible.Id = Floating Item ID
+customUI.triggerVolumeEffectEditor.field.floating_item_intangible.Invert = Invert
