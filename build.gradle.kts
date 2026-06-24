@@ -10,6 +10,9 @@ repositories {
     mavenCentral()
     maven ( url = "https://maven.hytale.com/release")
     maven ( url = "https://maven.hytale.com/pre-release")
+
+    // PlaceholderAPI
+    maven ( url = "https://repo.helpch.at/releases/")
 }
 
 val hytaleInstallPath: String by project
@@ -20,6 +23,9 @@ val resolvedServerJar = hytaleServerJarPath.ifBlank { "$hytaleInstallPath/Server
 dependencies {
     // Hytale Server API from official Maven repository
     compileOnly("com.hypixel.hytale:Server:0.5.6")
+
+    // PlaceholderAPI
+    compileOnly("at.helpch:placeholderapi-hytale:1.0.8")
 }
 
 java {
