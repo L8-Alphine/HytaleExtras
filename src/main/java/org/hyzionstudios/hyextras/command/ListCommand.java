@@ -5,7 +5,8 @@ import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncCommand;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractCommandCollection;
-import org.hyzionstudios.hyextras.ExtrasRegistry;
+import org.hyzionstudios.hyextras.triggerextras.TriggerActionRegistry;
+import org.hyzionstudios.hyextras.triggerextras.TriggerConditionRegistry;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -28,8 +29,8 @@ public class ListCommand extends AbstractCommandCollection {
 
         @Override
         protected CompletableFuture<Void> executeAsync(CommandContext ctx) {
-            String ids = String.join(", ", ExtrasRegistry.EFFECT_TYPE_IDS);
-            ctx.sendMessage(msg("Extra effects (" + ExtrasRegistry.EFFECT_TYPE_IDS.size() + "): " + ids));
+            String ids = String.join(", ", TriggerActionRegistry.TYPE_IDS);
+            ctx.sendMessage(msg("Extra effects (" + TriggerActionRegistry.TYPE_IDS.size() + "): " + ids));
             return CompletableFuture.completedFuture(null);
         }
     }
@@ -41,8 +42,8 @@ public class ListCommand extends AbstractCommandCollection {
 
         @Override
         protected CompletableFuture<Void> executeAsync(CommandContext ctx) {
-            String ids = String.join(", ", ExtrasRegistry.CONDITION_TYPE_IDS);
-            ctx.sendMessage(msg("Extra conditions (" + ExtrasRegistry.CONDITION_TYPE_IDS.size() + "): " + ids));
+            String ids = String.join(", ", TriggerConditionRegistry.TYPE_IDS);
+            ctx.sendMessage(msg("Extra conditions (" + TriggerConditionRegistry.TYPE_IDS.size() + "): " + ids));
             return CompletableFuture.completedFuture(null);
         }
     }
