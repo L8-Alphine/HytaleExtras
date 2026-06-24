@@ -1,315 +1,306 @@
 # HyExtras Developer API
 
-HyExtras exposes a small stable Java facade for other server mods:
+HyExtras exposes a small, stable Java facade — `org.hyzionstudios.hyextras.api.HyExtrasApi` — for other
+server mods that want to use HyExtras features without depending on internal service classes.
 
 ```java
 import org.hyzionstudios.hyextras.api.HyExtrasApi;
 import org.hyzionstudios.hyextras.imageicons.ImageIconResult;
 import org.hyzionstudios.hyextras.imageicons.ImageIconTuning;
 
-import java.net.URI;
-import java.nio.file.Path;
-
 HyExtrasApi api = HyExtrasApi.get();
 ```
 
-Use this facade instead of reaching into `org.hyzionstudios.hyextras.service` or `HyExtrasPlugin` internals. Internal classes may change between releases; the facade is the intended compatibility surface for 1.0.x.
+Use this facade instead of reaching into `org.hyzionstudios.hyextras.service` or `HyExtrasPlugin`
+internals. Internal classes may change between releases; the facade is the intended compatibility
+surface for `1.0.x`. Contributors extending HyExtras itself should read the
+[internals docs](internals/services.md).
+
+**Sections:** [Availability](#availability) · [Player registry](#player-registry) ·
+[Persistence rules](#persistence-rules) · [Variables](#variables) · [Tags](#tags) ·
+[Cooldowns](#cooldowns) · [Visibility](#visibility) · [Packets & Messaging](#packets--messaging) ·
+[Rules & Placeholders](#rules--placeholders) · [ImageIcons](#imageicons) · [TagNPC](#tagnpc) ·
+[FloatingItems](#floatingitems) · [Suggested patterns](#suggested-patterns) ·
+[Compatibility](#compatibility-notes)
+
+---
 
 ## Availability
 
-Call the API after HyExtras has started. `HyExtrasApi.get()` always returns the facade object, but methods that need the running plugin throw `IllegalStateException` if HyExtras is not active.
+`HyExtrasApi.get()` always returns the facade, but methods that need the running plugin throw
+`IllegalStateException` when HyExtras is not active. Guard with `isAvailable()`:
 
 ```java
 HyExtrasApi api = HyExtrasApi.get();
-if (!api.isAvailable()) {
-    return;
-}
+if (!api.isAvailable()) return;
 ```
 
-Online-player helpers:
+| Method | Returns | Notes |
+|---|---|---|
+| `static HyExtrasApi get()` | `HyExtrasApi` | The singleton facade. |
+| `boolean isAvailable()` | `boolean` | True when HyExtras is started. |
+| `static final String DEFAULT_PARTY_VARIABLE` | `"partyId"` | Variable used by group visibility policy. |
 
-```java
-UUID uuid = api.getOnlinePlayerUuid("PlayerName");
-boolean online = api.isPlayerOnline(uuid);
-String name = api.getOnlinePlayerName(uuid);
-List<String> activeVolumes = api.getActiveVolumeIds(uuid);
-```
+## Player registry
 
-## Persistence Rules
+| Method | Returns | Notes |
+|---|---|---|
+| `getOnlinePlayerUuid(String username)` | `UUID` \| `null` | Online player UUID by name. |
+| `isPlayerOnline(UUID player)` | `boolean` | |
+| `getOnlinePlayerName(UUID player)` | `String` \| `null` | |
+| `getActiveVolumeIds(UUID player)` | `List<String>` | IDs of volumes the player is inside. |
 
-HyExtras state intentionally has different lifetimes:
+---
+
+## Persistence rules
 
 | State | Lifetime |
 |---|---|
-| Variables | Runtime only; cleared on disconnect |
-| Cooldowns | Runtime only; cleared on disconnect |
-| Visibility overrides | Runtime only; cleared on disconnect |
-| Tags | Persistent; saved under the HyExtras data directory |
+| Variables | Runtime only; cleared on disconnect. |
+| Cooldowns | Runtime only; cleared on disconnect. |
+| Visibility overrides | Runtime only; cleared on disconnect. |
+| Tags | **Persistent**; saved under the HyExtras data directory. |
 
-`partyId` is the default variable used by `GroupArea:true` volume policy.
+State methods accept UUIDs and don't require the player to be online unless noted; packet/message
+helpers return `false` for offline players. See [Player State](systems/player-state.md).
+
+---
 
 ## Variables
 
-Variables are per-player runtime values. They are useful for session state, grouping, counters, and rule evaluation.
+Per-player runtime values. See [Player State → Variables](systems/player-state.md#variables).
+
+| Method | Returns |
+|---|---|
+| `getVariable(UUID player, String key)` | `Object` \| `null` |
+| `getVariableString(UUID player, String key)` | `String` \| `null` |
+| `setVariable(UUID player, String key, Object value)` | `void` |
+| `setVariableString(UUID player, String key, String value)` | `void` |
+| `incrementVariable(UUID player, String key, long delta)` | `long` (new value) |
+| `removeVariable(UUID player, String key)` | `void` |
+| `clearVariables(UUID player)` | `void` |
+| `snapshotVariables(UUID player)` | `Map<String,Object>` (defensive copy) |
 
 ```java
 api.setVariableString(playerUuid, "partyId", "alpha");
-api.setVariable(playerUuid, "score", 10);
-
-String partyId = api.getVariableString(playerUuid, "partyId");
 long score = api.incrementVariable(playerUuid, "score", 1);
-
-Map<String, Object> variables = api.snapshotVariables(playerUuid);
-api.removeVariable(playerUuid, "score");
-api.clearVariables(playerUuid);
+Map<String, Object> all = api.snapshotVariables(playerUuid);
 ```
 
-Snapshots are defensive copies and safe to inspect without mutating HyExtras internals.
+---
 
 ## Tags
 
-Tags are persistent boolean flags. Use them for story progress, unlocks, permissions, or long-lived player state.
+Persistent boolean flags. See [Player State → Tags](systems/player-state.md#tags).
+
+| Method | Returns |
+|---|---|
+| `addTag(UUID player, String tag)` | `void` |
+| `removeTag(UUID player, String tag)` | `void` |
+| `clearTags(UUID player)` | `void` (also deletes the persisted file) |
+| `hasTag(UUID player, String tag)` | `boolean` |
+| `snapshotTags(UUID player)` | `Set<String>` (defensive copy) |
+| `saveTags(UUID player)` | `void` (persist without clearing) |
 
 ```java
 api.addTag(playerUuid, "storyline_a_active");
-
-if (api.hasTag(playerUuid, "storyline_a_active")) {
-    api.sendActionBar(playerUuid, "Story path active");
-}
-
-Set<String> tags = api.snapshotTags(playerUuid);
-api.removeTag(playerUuid, "storyline_a_active");
-api.saveTags(playerUuid);
+if (api.hasTag(playerUuid, "storyline_a_active")) { /* … */ }
 ```
 
-`clearTags(playerUuid)` removes all loaded tags and deletes the persisted tag file.
+---
 
 ## Cooldowns
 
-Cooldowns are per-player runtime timers separate from native trigger volume cooldowns.
+Per-player runtime timers. See [Player State → Cooldowns](systems/player-state.md#cooldowns).
+
+| Method | Returns |
+|---|---|
+| `isCooldownReady(UUID player, String name)` | `boolean` (true when not active) |
+| `applyCooldown(UUID player, String name, float seconds)` | `void` |
+| `clearCooldown(UUID player, String name)` | `void` |
+| `clearCooldowns(UUID player)` | `void` |
+| `remainingCooldownSeconds(UUID player, String name)` | `float` (0 when inactive) |
+| `snapshotCooldowns(UUID player)` | `Map<String,Float>` |
 
 ```java
 if (api.isCooldownReady(playerUuid, "daily_bonus")) {
     api.applyCooldown(playerUuid, "daily_bonus", 86400.0f);
-    api.sendRichMessage(playerUuid, "&aDaily bonus claimed.");
 }
-
-float remaining = api.remainingCooldownSeconds(playerUuid, "daily_bonus");
-Map<String, Float> cooldowns = api.snapshotCooldowns(playerUuid);
-
-api.clearCooldown(playerUuid, "daily_bonus");
-api.clearCooldowns(playerUuid);
 ```
+
+---
 
 ## Visibility
 
-Player-to-player visibility is first-class and uses Hytale's player visibility manager when `usePackets` is true and `advancedPacketActions=true`.
+Player-to-player and best-effort entity visibility, plus targeting protection. Volume policy can still
+override explicit hides — see [Visibility & Packets](systems/visibility-and-packets.md).
+
+**Player visibility**
+
+| Method | Returns |
+|---|---|
+| `hidePlayerFrom(UUID viewer, UUID target, boolean usePackets)` | `boolean` (false if policy force-allows) |
+| `hidePlayerFrom(String viewerName, String targetName, boolean usePackets)` | `boolean` |
+| `showPlayerTo(UUID viewer, UUID target, boolean usePackets)` | `boolean` |
+| `showPlayerTo(String viewerName, String targetName, boolean usePackets)` | `boolean` |
+| `isPlayerHiddenFrom(UUID viewer, UUID target)` | `boolean` (effective result after policy) |
+| `snapshotHiddenPlayers(UUID viewer)` | `Set<UUID>` (explicit overrides, before policy) |
+| `clearHiddenPlayers(UUID viewer)` | `void` |
+
+**Entity visibility** (best-effort; needs `advancedPacketActions` + `entityPacketFiltering`)
+
+| Method | Returns |
+|---|---|
+| `hideEntityFrom(UUID viewer, UUID entity)` | `void` |
+| `showEntityTo(UUID viewer, UUID entity)` | `void` |
+
+**Targeting protection** (NPC `TargetMemory`)
+
+| Method | Returns |
+|---|---|
+| `protectPlayerFromTargeting(UUID player)` | `void` |
+| `unprotectPlayerFromTargeting(UUID player)` | `void` |
+| `isPlayerProtectedFromTargeting(UUID player)` | `boolean` |
+| `snapshotTargetingProtectedPlayers()` | `Set<UUID>` |
 
 ```java
 api.hidePlayerFrom(viewerUuid, targetUuid, true);
-boolean hidden = api.isPlayerHiddenFrom(viewerUuid, targetUuid);
-api.showPlayerTo(viewerUuid, targetUuid, true);
+api.protectPlayerFromTargeting(viewerUuid);
 ```
 
-Username overloads are available for online players:
+---
 
-```java
-api.hidePlayerFrom("ViewerName", "TargetName", true);
-api.showPlayerTo("ViewerName", "TargetName", true);
-```
+## Packets & Messaging
 
-Volume policy can still override explicit visibility:
+High-level per-player helpers. All return `false` when the player is offline. Text accepts HyExtras
+[color/style codes](string-templates.md#color--style-codes) but does **not** resolve trigger-context
+placeholders (use [`resolveText`](#rules--placeholders) first if needed).
 
-| Volume tag | API effect |
+| Method | Returns |
 |---|---|
-| `IsStoryArea:false` | Force allows visibility, so `hidePlayerFrom` returns false |
-| `IsStoryArea:true` | Effective `isPlayerHiddenFrom` returns true for players sharing that volume |
-| `GroupArea:true` | Visibility follows same `partyId` and `PartyAmount` policy |
-
-For volume tags to visually apply without a custom effect, keep `playerVisibilityPolicySync=true`. This is enabled by default and only syncs player-to-player packets; it does not enable the experimental non-player entity update filter.
-
-Best-effort entity visibility is available by entity UUID:
-
-```java
-api.hideEntityFrom(viewerUuid, entityUuid);
-api.showEntityTo(viewerUuid, entityUuid);
-```
-
-This only affects outbound entity updates when both `advancedPacketActions=true` and `entityPacketFiltering=true`, and only when the server can resolve the entity from its network ID. `entityPacketFiltering` is off by default because it is experimental and runs on the packet path. It does not expose raw packet sending.
-
-### Targeting Protection
-
-HyExtras can also protect a player from supported NPC targeting while a visibility policy is active. This uses Hytale's NPC combat `TargetMemory` component: HyExtras removes the protected player's entity reference from hostile memory and clears them as the closest hostile. Entity AI that does not use this component is ignored safely.
+| `sendRichMessage(UUID player, String message)` | `boolean` |
+| `sendTitle(UUID player, String title, String subtitle, float seconds)` | `boolean` |
+| `sendTitle(UUID player, String title, String subtitle, float seconds, float fadeIn, float fadeOut)` | `boolean` |
+| `sendActionBar(UUID player, String message)` | `boolean` |
+| `setCamera(UUID player, SetCameraAction.CameraMode mode, boolean locked)` | `boolean` |
+| `resetCamera(UUID player)` | `boolean` |
 
 ```java
-api.protectPlayerFromTargeting(playerUuid);
-boolean protectedNow = api.isPlayerProtectedFromTargeting(playerUuid);
-Set<UUID> protectedPlayers = api.snapshotTargetingProtectedPlayers();
-api.unprotectPlayerFromTargeting(playerUuid);
-```
-
-Trigger volumes use the same system when `player_hide_entity` has `PreventTargeting=true`. `player_show_entity` with `PreventTargeting=true`, `clear_player_overrides`, disconnect, or shutdown releases the protection.
-
-## Packets
-
-The API exposes high-level packet helpers only. All helpers return `false` when the player is offline.
-
-```java
-api.sendRichMessage(playerUuid, "&aWelcome back!");
-api.sendActionBar(playerUuid, "Party: " + api.getVariableString(playerUuid, "partyId"));
 api.sendTitle(playerUuid, "Dungeon Started", "Stay together", 3.0f);
-api.sendTitle(playerUuid, "Warning", "Low health", 2.0f, 0.1f, 0.8f);
 api.setCamera(playerUuid, SetCameraAction.CameraMode.THIRD_PERSON, true);
-api.resetCamera(playerUuid);
 ```
 
-Messages and title text accept HyExtras rich text color/style codes. These helpers do not resolve trigger-context placeholders because they are not running inside a trigger event; use `resolveText` first if needed.
+> `SetCameraAction.CameraMode` is the one internal enum the facade intentionally exposes.
 
-## Rules And Placeholders
+---
 
-Use rule helpers to evaluate the same lightweight predicates used by HyExtras visibility rules:
+## Rules & Placeholders
+
+Evaluate the same predicates and placeholders used by HyExtras visibility rules. See
+[String Templates](string-templates.md).
+
+| Method | Returns |
+|---|---|
+| `evaluateRule(String rule, UUID player)` | `boolean` |
+| `resolveText(String template, UUID player)` | `String` |
 
 ```java
 boolean canSeeStealth = api.evaluateRule("{hasTag:see_stealth}", playerUuid);
-boolean grouped = api.evaluateRule("{variable:partyId=alpha}", playerUuid);
+String text = api.resolveText("Party {variable:partyId}", playerUuid);
 ```
 
-Supported predicates:
-
-| Predicate | Meaning |
-|---|---|
-| `{hasTag:tag}` | Player has a persistent tag |
-| `{!hasTag:tag}` | Player does not have a persistent tag |
-| `{variable:key}` | Player variable exists |
-| `{!variable:key}` | Player variable is missing |
-| `{variable:key=value}` | Player variable equals a value |
-| `{variable:key!=value}` | Player variable does not equal a value |
-| `{volumeTag:key}` | One active volume has a tag key |
-| `{volumeTag:key=value}` | One active volume has a tag value |
-
-Text placeholders:
-
-```java
-String text = api.resolveText(
-    "Party {variable:partyId}, story={hasTag:storyline_a_active}, area={volumeTag:IsStoryArea}",
-    playerUuid);
-```
-
-Supported text placeholders include `{player}`, `{uuid}`, `{variable:key}`, `{hasTag:tag}`, `{!hasTag:tag}`, and `{volumeTag:key}`.
+---
 
 ## ImageIcons
 
-ImageIcons is a provider-scoped API for developer mods that want local or remote PNG/GIF icons without owning HyExtras internals. Providers can use any readable folder; a common shape is a mod-owned path such as `mods/MysticNameTags/data/imageicons`.
+Provider-scoped local/remote icons. Returns `ImageIconResult` (carries `success()`, `message()`, and
+`attachmentId()` for attaches). See [Image Icons](systems/image-icons.md).
+
+| Method | Returns |
+|---|---|
+| `registerImageIconProvider(String providerId, Path assetsPath)` | `ImageIconResult` |
+| `registerRemoteImageIcon(String providerId, String iconId, URI remoteUri)` | `ImageIconResult` |
+| `reloadImageIconProvider(String providerId)` | `ImageIconResult` |
+| `unregisterImageIconProvider(String providerId)` | `ImageIconResult` |
+| `attachImageIcon(UUID target, String providerId, String iconId, ImageIconTuning tuning)` | `ImageIconResult` |
+| `attachImageIconToPlayer(UUID targetPlayer, String providerId, String iconId, ImageIconTuning tuning)` | `ImageIconResult` |
+| `clearImageIcon(UUID attachmentId)` | `boolean` |
+| `clearImageIcons(UUID target)` | `int` (count cleared) |
+| `snapshotImageIconProviders()` | `Map<String, ImageIconProviderRegistration>` |
+| `snapshotImageIcons(String providerId)` | `Map<String, ImageIconDefinition>` |
+| `snapshotImageIcons()` | `Map<String, Map<String, ImageIconDefinition>>` |
+| `snapshotImageIconAttachments()` | `Map<UUID, ImageIconAttachment>` |
+| `snapshotImageIconLoadErrors()` | `Map<String, List<String>>` |
 
 ```java
-ImageIconResult provider = api.registerImageIconProvider(
-    "mysticnametags",
-    Path.of("mods/MysticNameTags/data/imageicons"));
-
-ImageIconResult remote = api.registerRemoteImageIcon(
-    "mysticnametags",
-    "vip.sparkle",
-    URI.create("https://example.com/assets/vip.gif"));
-
+api.registerImageIconProvider("mysticnametags", Path.of("mods/MysticNameTags/data/imageicons"));
 ImageIconResult attached = api.attachImageIconToPlayer(
-    playerUuid,
-    "mysticnametags",
-    "vip.sparkle",
-    ImageIconTuning.defaults(null));
-
-if (attached.success()) {
-    api.clearImageIcon(attached.attachmentId());
-}
+        playerUuid, "mysticnametags", "vip.sparkle", ImageIconTuning.defaults(null));
+if (attached.success()) api.clearImageIcon(attached.attachmentId());
 ```
 
-Local providers hot reload when `imageIcons.hotReload=true`. Remote icons are downloaded into the HyExtras cache, checked as PNG/GIF, size-limited by `imageIcons.remoteCache.maxBytes`, then loaded like local assets.
-
-Useful inspection helpers:
-
-```java
-api.snapshotImageIconProviders();
-api.snapshotImageIcons("mysticnametags");
-api.snapshotImageIconAttachments();
-api.snapshotImageIconLoadErrors();
-```
-
-Attachments are runtime-only and clear on disconnect, provider unregister, module disable, and shutdown. Icon IDs are provider-scoped, so `mysticnametags:vip.sparkle` and another mod's `vip.sparkle` do not collide.
-
-## FloatingItems
-
-FloatingItems creates decorative, non-pickup item displays. It is useful for mods that want a visible item marker without spawning a collectible dropped item entity.
-
-```java
-FloatingItemResult created = api.createFloatingItem(
-    "quest_marker_gold",
-    new ItemStack("hytale:gold_coin", 1),
-    store,
-    position,
-    FloatingItemTuning.defaults(config),
-    true);
-
-api.setFloatingItemIntangible("quest_marker_gold", true);
-api.moveFloatingItem("quest_marker_gold", store, newPosition);
-api.removeFloatingItem("quest_marker_gold");
-```
-
-For online-player anchors:
-
-```java
-api.createFloatingItemAtPlayer(
-    "player_marker",
-    playerUuid,
-    new ItemStack("hytale:gold_coin", 1),
-    FloatingItemTuning.defaults(config),
-    false);
-```
-
-Useful inspection helpers:
-
-```java
-api.snapshotFloatingItem("quest_marker_gold");
-api.snapshotFloatingItems();
-api.snapshotFloatingItemsNear(store, position, 16.0D);
-```
-
-FloatingItems records runtime state and optional persistent definitions, but the renderer never creates collectible world drops. If PacketAPI display support is unavailable, creation returns a failed `FloatingItemResult` message instead of crashing the caller.
+---
 
 ## TagNPC
 
-TagNPC stores runtime tags and variables for UUID-backed NPCs, mobs, and other entities. It is runtime-only in this first pass.
+Runtime tags/variables and visibility for UUID-backed entities. Mutations return `TagNpcResult`. See
+[TagNPC](systems/tag-npc.md).
+
+| Method | Returns |
+|---|---|
+| `addEntityTag(UUID entity, String tag)` | `TagNpcResult` |
+| `removeEntityTag(UUID entity, String tag)` | `TagNpcResult` |
+| `hasEntityTag(UUID entity, String tag)` | `boolean` |
+| `snapshotEntityTags(UUID entity)` | `Set<String>` |
+| `clearEntityTags(UUID entity)` | `TagNpcResult` |
+| `setEntityVariable(UUID entity, String key, Object value)` | `TagNpcResult` |
+| `getEntityVariable(UUID entity, String key)` | `Object` \| `null` |
+| `getEntityVariableString(UUID entity, String key)` | `String` \| `null` |
+| `incrementEntityVariable(UUID entity, String key, long delta)` | `long` |
+| `removeEntityVariable(UUID entity, String key)` | `TagNpcResult` |
+| `snapshotEntityVariables(UUID entity)` | `Map<String,Object>` |
+| `clearEntityVariables(UUID entity)` | `TagNpcResult` |
+| `hideEntityFromViewer(UUID viewer, UUID entity)` | `TagNpcResult` |
+| `showEntityToViewer(UUID viewer, UUID entity)` | `TagNpcResult` |
+| `isEntityHiddenFromViewer(UUID viewer, UUID entity)` | `boolean` |
+| `snapshotTaggedEntities(String tag)` | `Set<UUID>` |
+| `snapshotTagNpcState(UUID entity)` | `TagNpcEntityState` \| `null` |
+| `snapshotAllTagNpcStates()` | `Map<UUID, TagNpcEntityState>` |
+| `findNearestTagNpcEntity(UUID player, double radius)` | `UUID` \| `null` |
 
 ```java
 api.addEntityTag(entityUuid, "quest_guard");
 api.setEntityVariable(entityUuid, "mood", "alert");
-api.incrementEntityVariable(entityUuid, "aggro", 1);
-
-boolean tagged = api.hasEntityTag(entityUuid, "quest_guard");
-String mood = api.getEntityVariableString(entityUuid, "mood");
-Set<UUID> guards = api.snapshotTaggedEntities("quest_guard");
-```
-
-Per-viewer entity visibility delegates to PacketAPI entity visibility state:
-
-```java
-api.hideEntityFromViewer(viewerUuid, entityUuid);
-boolean hidden = api.isEntityHiddenFromViewer(viewerUuid, entityUuid);
-api.showEntityToViewer(viewerUuid, entityUuid);
-```
-
-Visual hiding of non-player entities requires `advancedPacketActions=true` and `entityPacketFiltering=true`; otherwise HyExtras records state and returns a failed `TagNpcResult` message for packet delivery. Trigger Volume actions can target the triggering entity, an explicit `EntityUuid`, or all tracked entities with a `TargetTag`. Admin/debug commands are available under `/hextras tagnpc` for explicit UUID edits.
-
-HyExtras also indexes UUID-backed non-player entities with positions so tools can select the closest NPC/mob near an online player:
-
-```java
 UUID nearest = api.findNearestTagNpcEntity(playerUuid, 12.0D);
-if (nearest != null) {
-    api.addEntityTag(nearest, "quest_guard");
-}
 ```
 
-The matching command path is `/hextras tagnpc near ...`, for example `/hextras tagnpc near tag-add PlayerName 12 quest_guard`.
+---
 
-## Suggested Patterns
+## FloatingItems
+
+Decorative non-pickup displays. Returns `FloatingItemResult`. See
+[Floating Items](systems/floating-items.md).
+
+| Method | Returns |
+|---|---|
+| `createFloatingItem(String id, ItemStack item, Store<EntityStore> store, Vector3d position, FloatingItemTuning tuning, boolean persistent)` | `FloatingItemResult` |
+| `createFloatingItemAtPlayer(String id, UUID player, ItemStack item, FloatingItemTuning tuning, boolean persistent)` | `FloatingItemResult` |
+| `removeFloatingItem(String id)` | `FloatingItemResult` |
+| `setFloatingItemIntangible(String id, boolean intangible)` | `FloatingItemResult` |
+| `moveFloatingItem(String id, Store<EntityStore> store, Vector3d position)` | `FloatingItemResult` |
+| `snapshotFloatingItem(String id)` | `FloatingItemInstance` \| `null` |
+| `snapshotFloatingItems()` | `Map<String, FloatingItemInstance>` |
+| `snapshotFloatingItemsNear(Store<EntityStore> store, Vector3d origin, double radius)` | `Map<String, FloatingItemInstance>` |
+
+```java
+api.createFloatingItemAtPlayer(
+        "player_marker", playerUuid, new ItemStack("hytale:gold_coin", 1),
+        FloatingItemTuning.defaults(config), false);
+```
+
+---
+
+## Suggested patterns
 
 Set a party/group identity for volume policy:
 
@@ -317,7 +308,7 @@ Set a party/group identity for volume policy:
 api.setVariableString(playerUuid, HyExtrasApi.DEFAULT_PARTY_VARIABLE, partyId);
 ```
 
-Gate a custom feature behind a persistent tag:
+Gate a feature behind a persistent tag:
 
 ```java
 if (!api.hasTag(playerUuid, "tutorial_complete")) {
@@ -334,9 +325,15 @@ api.protectPlayerFromTargeting(viewerUuid);
 api.applyCooldown(viewerUuid, "visibility_restore", 10.0f);
 ```
 
-## Compatibility Notes
+---
 
-- The facade is the supported 1.0.x API surface.
-- Do not depend on internal services or action classes except enum values explicitly used by the facade, such as `SetCameraAction.CameraMode`.
+## Compatibility notes
+
+- The facade is the supported `1.0.x` API surface.
+- Do not depend on internal services or action classes except enum values explicitly used by the
+  facade, such as `SetCameraAction.CameraMode`.
 - Raw packet sending is intentionally not exposed.
 - Non-player entity filtering is best-effort in Hytale `0.5.6`.
+
+See [Architecture](architecture.md) and [Internals: Services](internals/services.md) for how these
+calls are implemented.
