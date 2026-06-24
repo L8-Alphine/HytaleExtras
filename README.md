@@ -1,6 +1,6 @@
 # HyExtras
 
-HyExtras is an unofficial server mod for Hytale that **extends** the native Trigger Volume system with new effects and conditions.
+HyExtras is a modular creator and developer toolkit for Hytale servers, adding optional systems, APIs, and interaction tools that server owners can enable only when they need them.
 It does **not** replace, shadow, or compete with any native Trigger Volume functionality, and it is not affiliated with or endorsed by Hypixel Studios.
 
 ## Compatibility
@@ -20,6 +20,7 @@ HyExtras targets the Hytale `0.5.x` server API line.
 | `run_command` | Run a command as the triggering player with `{player}`, `{uuid}`, `{variable:key}` substitution |
 | `set_variable` | Set a per-player named variable to a string value |
 | `add_variable` | Add to a numeric per-player variable; alias of `increment_variable` |
+| `calculate_variable` | Evaluate a formula string and write the numeric result to a per-player variable |
 | `increment_variable` | Increment (or decrement) a numeric per-player variable |
 | `remove_variable` | Remove a per-player variable |
 | `apply_cooldown` | Apply a named HyExtras cooldown (separate from the native volume cooldown) |
@@ -40,6 +41,23 @@ HyExtras targets the Hytale `0.5.x` server API line.
 | `allow_volume_interactions` | Mark a sub-volume as an interaction override inside a blocked area; same options as above |
 | `set_camera` | Switch the triggering player's camera: `Mode` = `first_person` / `third_person` / `reset`; optional `Locked` bool |
 | `push_back_player` | Move the triggering player away from the interacted block or volume center; useful with rejection effects |
+| `set_volume_interactable` | Make a volume interactable at runtime with an action-bar prompt and interaction action text |
+| `clear_volume_interactable` | Clear the runtime interactable override for a volume |
+| `give_item_reward` | Give an `ItemStack` reward to the triggering player; the `Item` field uses `ItemStack.CODEC` for editor item metadata/browser support |
+| `run_reward_command` | Run a templated reward command as the triggering player |
+| `send_reward_message` | Send a templated reward message through chat, action bar, or title display |
+| `set_voice_activity` | Mute, unmute, or toggle native Hytale voice activity for the triggering or named player |
+| `tag_npc_add_tag` | Add a runtime tag to the triggering entity, explicit entity UUID, or all tracked entities with a target tag |
+| `tag_npc_remove_tag` | Remove a runtime TagNPC tag |
+| `tag_npc_set_variable` | Set a runtime variable on a UUID-backed NPC, mob, or entity |
+| `tag_npc_add_variable` | Add to a numeric TagNPC entity variable |
+| `tag_npc_remove_variable` | Remove a TagNPC entity variable |
+| `tag_npc_hide_entity` | Hide a tagged or explicit entity from a viewer through PacketAPI entity visibility state |
+| `tag_npc_show_entity` | Clear TagNPC/PacketAPI entity hide state for a viewer |
+| `floating_item_create` | Create a decorative non-pickup floating item display using `ItemStack.CODEC` |
+| `floating_item_remove` | Remove a floating item display by ID |
+| `floating_item_set_intangible` | Toggle the stored intangible state for a floating item |
+| `floating_item_move` | Move a floating item to a triggering entity, volume center, block position, or explicit coordinate |
 
 ### New Conditions
 
@@ -52,6 +70,12 @@ HyExtras targets the Hytale `0.5.x` server API line.
 | `player_hidden` | Pass if the triggering player currently has `TargetPlayer` hidden from their view |
 | `volume_has_tag` | Pass if a named volume has (or lacks) a tag key, optionally matching an exact value |
 | `has_tag` | Pass if the triggering player has (or lacks) a persistent tag; optional `Invert` |
+| `math_condition` | Evaluate a formula and compare it with another formula/value using numeric comparison operators |
+| `tag_npc_has_tag` | Pass if a targeted UUID-backed entity has a runtime TagNPC tag |
+| `tag_npc_variable_condition` | Pass if a targeted entity variable matches the configured comparison |
+| `tag_npc_visible_condition` | Pass if targeted entities are visible or hidden for a viewer |
+| `floating_item_exists` | Pass if a floating item ID is currently registered |
+| `floating_item_intangible` | Pass if a floating item is currently marked intangible |
 
 ### Commands
 
@@ -73,6 +97,31 @@ HyExtras targets the Hytale `0.5.x` server API line.
 /hextras list actions                    — list all registered extra effect type IDs
 /hextras list conditions                 — list all registered extra condition type IDs
 /hextras debug player <player>           — show variables, cooldowns, tags, and hidden-entity state
+/hextras modules                         — list internal HyExtras modules
+/hextras module info <module>            — show module state and config
+/hextras module enable <module>          — enable a safe live-toggle module and persist config
+/hextras module disable <module>         — disable a safe live-toggle module and persist config
+/hextras module reload <module>          — reload a reloadable module
+/hextras tagnpc tag add <entityUuid> <tag> — add a runtime tag to an entity by UUID
+/hextras tagnpc tag remove <entityUuid> <tag> — remove a runtime entity tag
+/hextras tagnpc tag list <entityUuid>    — list runtime tags for an entity
+/hextras tagnpc var set <entityUuid> <key> <value> — set a runtime entity variable
+/hextras tagnpc var get <entityUuid> <key> — read a runtime entity variable
+/hextras tagnpc var add <entityUuid> <key> <amount> — add to a runtime entity variable
+/hextras tagnpc var list <entityUuid>    — list runtime variables for an entity
+/hextras tagnpc hide <entityUuid> <viewer> — hide an entity from a player viewer
+/hextras tagnpc show <entityUuid> <viewer> — show an entity to a player viewer
+/hextras tagnpc near info <player> <radius> — inspect the closest indexed NPC/mob near a player
+/hextras tagnpc near tag-add <player> <radius> <tag> — tag the closest indexed NPC/mob in range
+/hextras tagnpc near tag-remove <player> <radius> <tag> — remove a tag from the closest indexed NPC/mob
+/hextras tagnpc near var-set <player> <radius> <key> <value> — set a variable on the closest indexed NPC/mob
+/hextras tagnpc near var-add <player> <radius> <key> <amount> — add to a variable on the closest indexed NPC/mob
+/hextras floatingitems list                — list decorative floating items
+/hextras floatingitems info <id>           — show floating item state
+/hextras floatingitems create <id> <player> <itemId> [persistent] — create at a player's position
+/hextras floatingitems remove <id>         — remove a floating item
+/hextras floatingitems intangible <id> <true|false> — set intangible state
+/hextras floatingitems reload              — re-render and save persistent floating items
 /hextras reload                          — reload hyextras.properties at runtime
 ```
 
@@ -95,6 +144,55 @@ playerVisibilityPolicySync=true
 
 # Print verbose debug info to the server log
 debugMode=false
+
+# Internal modules
+modules.trigger_extras.enabled=true
+modules.trigger_extras.allowInGameToggle=true
+modules.trigger_extras.reloadable=true
+
+modules.placeholder_api.enabled=true
+modules.placeholder_api.allowInGameToggle=true
+modules.placeholder_api.reloadable=true
+
+modules.packet_api.enabled=true
+modules.packet_api.allowInGameToggle=false
+modules.packet_api.reloadable=false
+
+modules.image_icons.enabled=true
+modules.image_icons.allowInGameToggle=true
+modules.image_icons.reloadable=true
+
+modules.tag_npc.enabled=true
+modules.tag_npc.allowInGameToggle=true
+modules.tag_npc.reloadable=true
+
+modules.floating_items.enabled=true
+modules.floating_items.allowInGameToggle=true
+modules.floating_items.reloadable=true
+
+# StringTemplate
+stringTemplate.nativePlaceholders.enabled=true
+stringTemplate.placeholderApi.enabled=true
+stringTemplate.placeholderApi.missingBehavior=KEEP_ORIGINAL
+
+# ImageIcons provider assets
+imageIcons.hotReload=true
+imageIcons.remoteCache.enabled=true
+imageIcons.remoteCache.maxBytes=5242880
+imageIcons.defaultVisibilityRadius=48.0
+imageIcons.maxIconsPerViewer=64
+
+# TagNPC runtime entity state
+tagNpc.defaultVisibilityRadius=64.0
+tagNpc.clearStateOnEntityUnload=true
+
+# FloatingItems decorative item displays
+floatingItems.defaultPersistent=false
+floatingItems.defaultIntangible=true
+floatingItems.defaultVisibilityRadius=48.0
+floatingItems.defaultBobAmplitude=0.15
+floatingItems.defaultRotationDegreesPerSecond=45.0
+floatingItems.maxItems=512
 ```
 
 ### What is already native (not duplicated)
@@ -111,7 +209,7 @@ The `volume_has_tag` condition reads `VolumeEntry.getRawTags()` — this include
 
 ### Interaction Bridge
 
-The HyExtras interaction bridge fires volume effects when a player interacts with something while inside a volume. To enable it on a volume:
+The HyExtras interaction bridge fires volume effects when a player interacts with something while inside a volume. To enable the basic bridge on a volume:
 
 1. Add static tag `hextras:interact` to the volume in the editor (any value, e.g. `1`).
 2. Add conditions and effects to the volume with event type **`TAG_ADDED`**.
@@ -123,6 +221,19 @@ The HyExtras interaction bridge fires volume effects when a player interacts wit
 The bridge uses `registerGlobal` so it fires for any player interacting in any world. Because it dispatches synchronously before the native interaction resolves, `cancel_interaction` is guaranteed to run in time.
 
 **InteractionType dropdown values** for the HyExtras `interaction_type` condition: `primary`, `secondary`, `ability1`, `ability2`, `ability3`, `use`, `pick`, `pickup`, `collision_enter`, `collision_leave`, `collision`, `swap_to`, `swap_from`, `death`.
+
+Interactable trigger volumes can also be declared directly with tags:
+
+| Static tag | Meaning |
+|---|---|
+| `hextras:interactable=true` | Marks the volume as interactable without requiring the legacy `hextras:interact` tag |
+| `hextras:interaction_message=interactionHints.generic` | Native interaction hint key or direct prompt text sent through PacketAPI action-bar messaging |
+| `hextras:interaction_action=<action text>` | Synthetic tag value and `{action}` value for custom prompt text |
+| `hextras:interaction_key=<key text>` | Value substituted into `{key}` for interaction hint messages |
+| `hextras:interaction_name=<target name>` | Value substituted into `{name}` for interaction hint messages |
+| `hextras:interaction_type=use` | Optional interaction type filter |
+
+Runtime effects `set_volume_interactable` and `clear_volume_interactable` override the static tags until restart. Prompt delivery is isolated behind the PacketAPI/action-bar path so a native volume-level prompt backend can replace it later if Hytale exposes one.
 
 ---
 
@@ -153,6 +264,16 @@ The bridge uses `registerGlobal` so it fires for any player interacting in any w
 { "type": "add_variable", "eventType": "ENTER", "Key": "score", "Delta": 1 }
 ```
 
+### Calculate a variable with a formula
+```json
+{ "type": "calculate_variable", "eventType": "ENTER", "Key": "bonus", "Formula": "({variable:score} + {activeVolumeCount}) * 2" }
+```
+
+### Gate with a math condition
+```json
+{ "type": "math_condition", "eventType": "ENTER", "Formula": "{variable:score} + 5", "Operator": "greater_or_equal", "Value": "10" }
+```
+
 ### Gate an effect behind a cooldown
 ```json
 [
@@ -165,6 +286,15 @@ The bridge uses `registerGlobal` so it fires for any player interacting in any w
 ### Chain into another volume
 ```json
 { "type": "trigger_named_volume", "eventType": "ENTER", "VolumeId": "reward_fanfare_volume" }
+```
+
+### Give creator-friendly rewards
+```json
+[
+  { "type": "give_item_reward", "eventType": "ENTER", "Item": { "itemId": "hytale:gold_coin", "quantity": 5 }, "Message": "&aReward: 5 coins" },
+  { "type": "run_reward_command", "eventType": "ENTER", "Command": "xp add {player} 25" },
+  { "type": "send_reward_message", "eventType": "ENTER", "Display": "action_bar", "Message": "Reward claimed in {currentVolumeId}!" }
+]
 ```
 
 ### Enable/disable a volume dynamically
@@ -282,6 +412,89 @@ Block all player interactions inside a volume at runtime, with sub-volume overri
 
 The blocked/allowed sets are runtime-only (cleared on server restart).
 
+### Interactable Trigger Volumes
+
+Use static tags when the interaction prompt should exist as part of the volume definition:
+
+```json
+{
+  "staticTags": {
+    "hextras:interactable": "true",
+    "hextras:interaction_message": "interactionHints.open",
+    "hextras:interaction_action": "claim reward",
+    "hextras:interaction_key": "E",
+    "hextras:interaction_name": "reward chest",
+    "hextras:interaction_type": "use"
+  },
+  "effects": [
+    { "type": "send_reward_message", "eventType": "TAG_ADDED", "Display": "chat", "Message": "&aClaimed reward in {currentVolumeId}" }
+  ]
+}
+```
+
+Use runtime effects when another volume, quest step, or tag state should make the target interactable temporarily:
+
+```json
+[
+  { "type": "set_volume_interactable", "eventType": "ENTER", "VolumeId": "reward_chest", "Message": "interactionHints.open", "Action": "open", "Key": "E", "Name": "reward chest", "InteractionType": "use" },
+  { "type": "clear_volume_interactable", "eventType": "EXIT", "VolumeId": "reward_chest" }
+]
+```
+
+### Voice Activity Zones
+
+`set_voice_activity` uses Hytale's native `VoiceModule`. If voice is unavailable or globally disabled, HyExtras logs once per action type and safely no-ops.
+
+```json
+[
+  { "type": "set_voice_activity", "eventType": "ENTER", "Mode": "mute" },
+  { "type": "set_voice_activity", "eventType": "EXIT", "Mode": "unmute" }
+]
+```
+
+### TagNPC Runtime Entity State
+
+TagNPC stores runtime tags and variables for UUID-backed NPCs, mobs, and other entities. It is useful when a Trigger Volume spawn/context gives you the mob or NPC entity UUID, or when another mod calls the developer API with an entity UUID.
+
+```json
+[
+  { "type": "tag_npc_add_tag", "eventType": "ENTER", "Target": "triggering_entity", "Tag": "quest_guard" },
+  { "type": "tag_npc_set_variable", "eventType": "ENTER", "Target": "triggering_entity", "Key": "mood", "Value": "alert" },
+  { "type": "tag_npc_has_tag", "Tag": "quest_guard" }
+]
+```
+
+Actions can also target an explicit `EntityUuid` or every currently tracked entity with `TargetTag`. Visibility actions use PacketAPI entity visibility state; visual hiding requires `advancedPacketActions=true` and `entityPacketFiltering=true`.
+
+Use `/hextras tagnpc ...` commands for explicit UUID debugging and admin edits. For in-game admin workflows without copying UUIDs, use `/hextras tagnpc near ...` to apply tags or variables to the closest indexed NPC/mob within a radius of a player.
+
+### FloatingItems
+
+FloatingItems creates decorative item displays that look like floating dropped items but are not rewards, pickups, or inventory drops. Trigger Volume creation uses `ItemStack.CODEC` for the `Item` field, while commands use a simple item ID and create at an online player's position.
+
+```json
+[
+  {
+    "type": "floating_item_create",
+    "eventType": "ENTER",
+    "Id": "ruins_key_display",
+    "Item": { "itemId": "hytale:gold_coin", "quantity": 1 },
+    "Anchor": "volume_center",
+    "OffsetY": 1.0,
+    "Persistent": true,
+    "Intangible": true
+  },
+  {
+    "type": "floating_item_set_intangible",
+    "eventType": "TAG_ADDED",
+    "Id": "ruins_key_display",
+    "Intangible": true
+  }
+]
+```
+
+The renderer is isolated behind PacketAPI/display state and never creates collectible dropped-item entities. If PacketAPI display support is unavailable, API calls fail safely with a message and no server crash.
+
 ### Camera Triggers
 
 `set_camera` sends a `SetServerCamera` packet to **only** the triggering player. Modes:
@@ -330,8 +543,16 @@ The following placeholders are supported in `run_command`, `send_title` (`Title`
 | `{eventType}` | Current trigger event type |
 | `{tagKey}` / `{tagValue}` | Current tag event key/value |
 | `{volumeTag:key}` | First matching active volume tag value, or empty string |
+| `{currentVolumeId}` | Current trigger volume ID |
+| `{activeVolumeCount}` | Number of active volumes for the triggering player |
+| `{currentVolumeTag:key}` | Tag value on the current trigger volume |
+| `{volumeTag:volumeId:key}` | Tag value on a named trigger volume |
+| `{volumeActive:volumeId}` | `true` when the named volume is active for the triggering player |
+| `%placeholder%` | PlaceholderAPI placeholder, when PlaceholderAPI is installed and `stringTemplate.placeholderApi.enabled=true` |
 
 `send_rich_message` and `send_title` also support simple color/style codes: `&0`-`&9`, `&a`-`&f`, `&#RRGGBB`, `&l` bold, `&o` italic, `&n` underline, `&r` reset, and `&&` for a literal ampersand.
+
+PlaceholderAPI is optional. If it is missing or leaves a `%placeholder%` unresolved, HyExtras follows `stringTemplate.placeholderApi.missingBehavior` (`KEEP_ORIGINAL`, `EMPTY`, or `ERROR`).
 
 ---
 
@@ -348,7 +569,23 @@ api.protectPlayerFromTargeting(viewerUuid);
 api.sendActionBar(playerUuid, "Party: " + api.getVariableString(playerUuid, "partyId"));
 ```
 
-The API exposes variables, tags, cooldowns, visibility overrides, targeting protection, high-level title/message/camera helpers, and rule evaluation. It does not expose raw packet sending in 1.0.2.
+The API exposes variables, tags, cooldowns, visibility overrides, targeting protection, high-level title/message/camera helpers, rule evaluation, ImageIcons provider registration, TagNPC state, and FloatingItems displays.
+
+### ImageIcons Developer API
+
+ImageIcons lets developer mods own local or remote PNG/GIF assets without global ID collisions. A mod can register any readable folder, such as `mods/MysticNameTags/data/imageicons`, and then attach provider-scoped icons to player or entity UUIDs:
+
+```java
+HyExtrasApi api = HyExtrasApi.get();
+api.registerImageIconProvider("mysticnametags", Path.of("mods/MysticNameTags/data/imageicons"));
+api.registerRemoteImageIcon("mysticnametags", "vip.sparkle", URI.create("https://example.com/vip.gif"));
+
+ImageIconTuning tuning = ImageIconTuning.defaults(null);
+UUID attachmentId = api.attachImageIconToPlayer(playerUuid, "mysticnametags", "vip.sparkle", tuning)
+        .attachmentId();
+```
+
+Local providers hot reload when `imageIcons.hotReload=true`. Remote assets are cached under the HyExtras data folder before loading. Attachments are runtime-only and are cleared on disconnect, provider unregister, module disable, and shutdown.
 
 See [docs/DEVELOPER_API.md](docs/DEVELOPER_API.md) for the full API reference, examples, persistence rules, and visibility policy notes.
 
@@ -360,24 +597,41 @@ See [docs/DEVELOPER_API.md](docs/DEVELOPER_API.md) for the full API reference, e
 org.hyzionstudios.hyextras/
 ├── HyExtrasPlugin           — plugin entry point, singleton, player name registry
 ├── TriggerVolumeApiAdapter  — all native TriggerVolumesPlugin calls go through here
-├── ExtrasRegistry           — one-time registration of 22 effects and 8 conditions
 ├── codec/
 │   └── CodecHelper          — KeyedCodec factory helpers
+├── module/                   — internal module lifecycle, state, and built-in module definitions
+├── imageicons/                — provider-scoped image asset loading and runtime icon attachments
+├── packetapi/
+│   ├── PacketApi             — packet-backed visibility, title, action bar, and camera facade
+│   ├── PacketCameraMode      — packet-owned camera mode enum
+│   └── service/
+│       ├── VisibilityPolicyService      — player/entity visibility policy and override application
+│       ├── PacketVisibilityService      — entity packet filtering service
+│       └── PlayerVisibilitySyncService  — player visibility policy sync loop
+├── triggerextras/
+│   ├── TriggerActionRegistry     — one-time registration of TriggerExtras effects
+│   ├── TriggerConditionRegistry  — one-time registration of TriggerExtras conditions
+│   ├── ExtraTriggerDispatcher    — synthetic trigger dispatch helper
+│   ├── TriggerExtrasInteractionBridge — interaction bridge runtime, prompts, and active-volume lookup
+│   ├── InteractableVolumeState — static/runtime interactable volume configuration
+│   ├── service/
+│   │   └── InteractionTriggerService  — cancel-pending tracking for interaction bridge
+│   ├── action/                   — TriggerEffect implementations
+│   ├── advanced/                 — per-player view TriggerEffect implementations
+│   └── condition/                — TriggerCondition implementations
 ├── service/
 │   ├── PlayerVariableService      — per-player key→value store
 │   ├── CooldownService            — per-player named cooldown tracker
 │   ├── PlayerTagService           — per-player boolean tag set, persisted to disk
-│   └── InteractionTriggerService  — cancel-pending tracking for interaction bridge
+│   └── TargetingPreventionService — NPC target-memory protection support
 ├── state/
 │   ├── PlayerOverrideService  — per-viewer entity visibility tracking
 │   └── RuntimeStateStore      — unified accessor (vars, cooldowns, playerOverrides, config)
-├── action/                    — 19 TriggerEffect implementations (including tag/camera/blocking/message)
-├── advanced/                  — 3 per-player view TriggerEffect implementations
-├── condition/                 — 8 TriggerCondition implementations
 ├── command/                   — /hextras command tree
 ├── config/                    — HyExtrasConfig, ConfigLoader
 └── util/
-    └── StringTemplate         — {player}/{uuid}/{variable:key} resolution
+    ├── ArithmeticExpression   — small formula evaluator for TriggerExtras math
+    └── StringTemplate         — native, module, volume, and PlaceholderAPI template resolution
 ```
 
 ---
