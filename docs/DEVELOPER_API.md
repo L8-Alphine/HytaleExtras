@@ -4,6 +4,11 @@ HyExtras exposes a small stable Java facade for other server mods:
 
 ```java
 import org.hyzionstudios.hyextras.api.HyExtrasApi;
+import org.hyzionstudios.hyextras.imageicons.ImageIconResult;
+import org.hyzionstudios.hyextras.imageicons.ImageIconTuning;
+
+import java.net.URI;
+import java.nio.file.Path;
 
 HyExtrasApi api = HyExtrasApi.get();
 ```
@@ -191,6 +196,118 @@ String text = api.resolveText(
 ```
 
 Supported text placeholders include `{player}`, `{uuid}`, `{variable:key}`, `{hasTag:tag}`, `{!hasTag:tag}`, and `{volumeTag:key}`.
+
+## ImageIcons
+
+ImageIcons is a provider-scoped API for developer mods that want local or remote PNG/GIF icons without owning HyExtras internals. Providers can use any readable folder; a common shape is a mod-owned path such as `mods/MysticNameTags/data/imageicons`.
+
+```java
+ImageIconResult provider = api.registerImageIconProvider(
+    "mysticnametags",
+    Path.of("mods/MysticNameTags/data/imageicons"));
+
+ImageIconResult remote = api.registerRemoteImageIcon(
+    "mysticnametags",
+    "vip.sparkle",
+    URI.create("https://example.com/assets/vip.gif"));
+
+ImageIconResult attached = api.attachImageIconToPlayer(
+    playerUuid,
+    "mysticnametags",
+    "vip.sparkle",
+    ImageIconTuning.defaults(null));
+
+if (attached.success()) {
+    api.clearImageIcon(attached.attachmentId());
+}
+```
+
+Local providers hot reload when `imageIcons.hotReload=true`. Remote icons are downloaded into the HyExtras cache, checked as PNG/GIF, size-limited by `imageIcons.remoteCache.maxBytes`, then loaded like local assets.
+
+Useful inspection helpers:
+
+```java
+api.snapshotImageIconProviders();
+api.snapshotImageIcons("mysticnametags");
+api.snapshotImageIconAttachments();
+api.snapshotImageIconLoadErrors();
+```
+
+Attachments are runtime-only and clear on disconnect, provider unregister, module disable, and shutdown. Icon IDs are provider-scoped, so `mysticnametags:vip.sparkle` and another mod's `vip.sparkle` do not collide.
+
+## FloatingItems
+
+FloatingItems creates decorative, non-pickup item displays. It is useful for mods that want a visible item marker without spawning a collectible dropped item entity.
+
+```java
+FloatingItemResult created = api.createFloatingItem(
+    "quest_marker_gold",
+    new ItemStack("hytale:gold_coin", 1),
+    store,
+    position,
+    FloatingItemTuning.defaults(config),
+    true);
+
+api.setFloatingItemIntangible("quest_marker_gold", true);
+api.moveFloatingItem("quest_marker_gold", store, newPosition);
+api.removeFloatingItem("quest_marker_gold");
+```
+
+For online-player anchors:
+
+```java
+api.createFloatingItemAtPlayer(
+    "player_marker",
+    playerUuid,
+    new ItemStack("hytale:gold_coin", 1),
+    FloatingItemTuning.defaults(config),
+    false);
+```
+
+Useful inspection helpers:
+
+```java
+api.snapshotFloatingItem("quest_marker_gold");
+api.snapshotFloatingItems();
+api.snapshotFloatingItemsNear(store, position, 16.0D);
+```
+
+FloatingItems records runtime state and optional persistent definitions, but the renderer never creates collectible world drops. If PacketAPI display support is unavailable, creation returns a failed `FloatingItemResult` message instead of crashing the caller.
+
+## TagNPC
+
+TagNPC stores runtime tags and variables for UUID-backed NPCs, mobs, and other entities. It is runtime-only in this first pass.
+
+```java
+api.addEntityTag(entityUuid, "quest_guard");
+api.setEntityVariable(entityUuid, "mood", "alert");
+api.incrementEntityVariable(entityUuid, "aggro", 1);
+
+boolean tagged = api.hasEntityTag(entityUuid, "quest_guard");
+String mood = api.getEntityVariableString(entityUuid, "mood");
+Set<UUID> guards = api.snapshotTaggedEntities("quest_guard");
+```
+
+Per-viewer entity visibility delegates to PacketAPI entity visibility state:
+
+```java
+api.hideEntityFromViewer(viewerUuid, entityUuid);
+boolean hidden = api.isEntityHiddenFromViewer(viewerUuid, entityUuid);
+api.showEntityToViewer(viewerUuid, entityUuid);
+```
+
+Visual hiding of non-player entities requires `advancedPacketActions=true` and `entityPacketFiltering=true`; otherwise HyExtras records state and returns a failed `TagNpcResult` message for packet delivery. Trigger Volume actions can target the triggering entity, an explicit `EntityUuid`, or all tracked entities with a `TargetTag`. Admin/debug commands are available under `/hextras tagnpc` for explicit UUID edits.
+
+HyExtras also indexes UUID-backed non-player entities with positions so tools can select the closest NPC/mob near an online player:
+
+```java
+UUID nearest = api.findNearestTagNpcEntity(playerUuid, 12.0D);
+if (nearest != null) {
+    api.addEntityTag(nearest, "quest_guard");
+}
+```
+
+The matching command path is `/hextras tagnpc near ...`, for example `/hextras tagnpc near tag-add PlayerName 12 quest_guard`.
 
 ## Suggested Patterns
 
