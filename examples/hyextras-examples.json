@@ -29,6 +29,14 @@
     "Delta": 1
   },
 
+  "calculate_variable_bonus": {
+    "_comment": "Formula strings resolve StringTemplate placeholders first, then evaluate arithmetic.",
+    "type": "calculate_variable",
+    "eventType": "ENTER",
+    "Key": "bonus",
+    "Formula": "({variable:score} + {activeVolumeCount}) * 2"
+  },
+
   "decrement_variable": {
     "type": "increment_variable",
     "eventType": "ENTER",
@@ -53,6 +61,27 @@
     "type": "trigger_named_volume",
     "eventType": "ENTER",
     "VolumeId": "reward_fanfare_volume"
+  },
+
+  "give_item_reward": {
+    "_comment": "Item uses ItemStack.CODEC so the editor can expose native item metadata/browser behavior.",
+    "type": "give_item_reward",
+    "eventType": "ENTER",
+    "Item": { "itemId": "hytale:gold_coin", "quantity": 5 },
+    "Message": "&aReward: 5 coins"
+  },
+
+  "run_reward_command": {
+    "type": "run_reward_command",
+    "eventType": "ENTER",
+    "Command": "xp add {player} 25"
+  },
+
+  "send_reward_message": {
+    "type": "send_reward_message",
+    "eventType": "ENTER",
+    "Display": "action_bar",
+    "Message": "Reward claimed in {currentVolumeId}!"
   },
 
   "remove_item": {
@@ -106,6 +135,14 @@
     "eventType": "ENTER",
     "Key": "zone",
     "Operator": "exists"
+  },
+
+  "math_condition_score_gate": {
+    "type": "math_condition",
+    "eventType": "ENTER",
+    "Formula": "{variable:score} + 5",
+    "Operator": "greater_or_equal",
+    "Value": "10"
   },
 
   "cooldown_ready": {
@@ -305,6 +342,71 @@
       { "type": "send_title",         "eventType": "TAG_ADDED", "ActionBar": "You used it!" },
       { "type": "cancel_interaction", "eventType": "TAG_ADDED" }
     ]
+  },
+
+  "interactable_volume_static_tags": {
+    "_comment": "Static tags make the trigger volume itself interactable; prompt is delivered through PacketAPI/action-bar messaging.",
+    "staticTags": {
+      "hextras:interactable": "true",
+      "hextras:interaction_message": "interactionHints.open",
+      "hextras:interaction_action": "claim reward",
+      "hextras:interaction_key": "E",
+      "hextras:interaction_name": "reward chest",
+      "hextras:interaction_type": "use"
+    },
+    "effects": [
+      { "type": "send_reward_message", "eventType": "TAG_ADDED", "Display": "chat", "Message": "&aClaimed reward in {currentVolumeId}" }
+    ]
+  },
+
+  "interactable_volume_runtime": {
+    "_comment": "Runtime interactable state overrides static tags until restart.",
+    "effects": [
+      { "type": "set_volume_interactable", "eventType": "ENTER", "VolumeId": "reward_chest", "Message": "interactionHints.open", "Action": "open", "Key": "E", "Name": "reward chest", "InteractionType": "use" },
+      { "type": "clear_volume_interactable", "eventType": "EXIT", "VolumeId": "reward_chest" }
+    ]
+  },
+
+  "voice_mute_zone": {
+    "_comment": "Mute players on enter and unmute on exit using Hytale VoiceModule.",
+    "effects": [
+      { "type": "set_voice_activity", "eventType": "ENTER", "Mode": "mute" },
+      { "type": "set_voice_activity", "eventType": "EXIT", "Mode": "unmute" }
+    ]
+  },
+
+  "floating_item_create": {
+    "_comment": "Creates a decorative non-pickup floating item at the trigger volume center. Item uses ItemStack.CODEC.",
+    "type": "floating_item_create",
+    "eventType": "ENTER",
+    "Id": "ruins_gold_marker",
+    "Item": { "itemId": "hytale:gold_coin", "quantity": 1 },
+    "Anchor": "volume_center",
+    "OffsetY": 1.0,
+    "Persistent": true,
+    "Intangible": true,
+    "Scale": 1.0,
+    "VisibilityRadius": 48.0,
+    "BobAmplitude": 0.15,
+    "RotationDegreesPerSecond": 45.0
+  },
+
+  "floating_item_move_and_check": {
+    "_comment": "Move a floating item to a block interaction position, then gate follow-up effects by state.",
+    "conditions": [
+      { "type": "floating_item_exists", "eventType": "TAG_ADDED", "Id": "ruins_gold_marker" },
+      { "type": "floating_item_intangible", "eventType": "TAG_ADDED", "Id": "ruins_gold_marker" }
+    ],
+    "effects": [
+      { "type": "floating_item_move", "eventType": "TAG_ADDED", "Id": "ruins_gold_marker", "Anchor": "block_position", "OffsetY": 0.5 },
+      { "type": "floating_item_set_intangible", "eventType": "TAG_ADDED", "Id": "ruins_gold_marker", "Intangible": true }
+    ]
+  },
+
+  "floating_item_remove": {
+    "type": "floating_item_remove",
+    "eventType": "EXIT",
+    "Id": "ruins_gold_marker"
   },
 
   "camera_cinematic_volume": {
