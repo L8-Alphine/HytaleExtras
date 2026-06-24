@@ -39,6 +39,7 @@ HyExtras targets the Hytale `0.5.x` server API line.
 | `block_volume_interactions` | Block all interactions for players inside a volume; optional `Mode` (`enable`/`disable`/`toggle`) and `VolumeId` |
 | `allow_volume_interactions` | Mark a sub-volume as an interaction override inside a blocked area; same options as above |
 | `set_camera` | Switch the triggering player's camera: `Mode` = `first_person` / `third_person` / `reset`; optional `Locked` bool |
+| `push_back_player` | Move the triggering player away from the interacted block or volume center; useful with rejection effects |
 
 ### New Conditions
 
@@ -78,8 +79,19 @@ HyExtras targets the Hytale `0.5.x` server API line.
 ### Configuration (`hyextras.properties`)
 
 ```properties
-# Enable per-player entity visibility packet sends (player_hide_entity, player_show_entity, etc.)
+# Recommended: keep supported per-player packet features enabled.
+# Includes player visibility packets, titles, action bars, camera packets, and API packet helpers.
 advancedPacketActions=true
+
+# Experimental: enable non-player EntityUpdates filtering for best-effort entity hiding.
+# Keep false unless you are specifically testing non-player entity packet visibility.
+entityPacketFiltering=false
+
+# Print startup/preflight diagnostics for config, dependencies, packet filters, and plugin conflicts.
+startupDiagnostics=true
+
+# Recommended: automatically applies IsStoryArea/GroupArea visibility tags to player packets.
+playerVisibilityPolicySync=true
 
 # Print verbose debug info to the server log
 debugMode=false
@@ -105,7 +117,8 @@ The HyExtras interaction bridge fires volume effects when a player interacts wit
 2. Add conditions and effects to the volume with event type **`TAG_ADDED`**.
    - Conditions are evaluated first; all must pass or effects are skipped.
    - The synthetic context has `tagKey = "hextras_interact"`, `tagValue = <InteractionType name>` (e.g. `Use`, `Primary`, `Secondary`).
-3. To cancel the interaction (block the door/chest/entity from responding), add `cancel_interaction` to the effects.
+3. To cancel the interaction (block the door/chest/entity from responding), add `cancel_interaction` to the rejection effects or effects that should deny access.
+4. To push denied players away from the door/block, add `push_back_player` to the same rejection effects. Optional fields: `Distance` (default `1.25`) and `YOffset` (default `0.0`).
 
 The bridge uses `registerGlobal` so it fires for any player interacting in any world. Because it dispatches synchronously before the native interaction resolves, `cancel_interaction` is guaranteed to run in time.
 
@@ -196,7 +209,56 @@ They are distinct from variables: tags are flags (present / absent), not values.
 
 `/hextras debug player <name>` shows the current tag set alongside variables and cooldowns.
 
-> **Note on mob/entity visibility:** In the current `0.5.x` API, there is no per-player mechanism to hide non-player entities (mobs, NPCs). `HiddenFromAdventurePlayers` hides from all adventure players, not a single viewer. `player_hide_entity` / `player_show_entity` only work player-to-player. Use `has_tag` conditions plus spawning/despawning prefabs (native `PastePrefab` + `DeleteVolume`) as the best available workaround for storyline-specific mob visibility.
+> **Note on mob/entity visibility:** Player-to-player visibility is first-class through Hytale's `HiddenPlayersManager`. Non-player entity visibility is best-effort in HyExtras: when `advancedPacketActions=true`, HyExtras can filter outbound entity update packets for hidden viewer/entity pairs when the entity can be resolved from its network ID. `PreventTargeting` now also clears protected players from supported Hytale NPC combat `TargetMemory`; NPCs/entities that do not use that component are ignored safely.
+
+### Per-Player Visibility Rules
+
+`player_hide_entity` and `player_show_entity` now support rule-driven targeting:
+
+| Field | Meaning |
+|---|---|
+| `TargetPlayer` | Exact online player username, preserving the original behavior |
+| `TargetSelector` | `player` (default), `players` (all matching online players), or `entities` (developer API / packet-filter path) |
+| `ViewerRule` | Predicates that must match the triggering viewer |
+| `TargetRule` | Predicates that must match the target player/entity |
+| `PreventTargeting` | Protects the triggering player by clearing them from supported NPC combat target memory until show/clear/disconnect |
+
+When `PreventTargeting=true` on `player_hide_entity`, HyExtras marks the triggering player as protected. `player_show_entity` with `PreventTargeting=true`, `clear_player_overrides`, disconnect, or shutdown releases that protection. This covers NPCs that use Hytale's `TargetMemory`; other entity AI systems may need their own integration later.
+
+Supported rule predicates:
+
+| Predicate | Meaning |
+|---|---|
+| `{hasTag:tag}` / `{!hasTag:tag}` | Player has / lacks a persistent HyExtras tag |
+| `{variable:key=value}` / `{variable:key!=value}` | Player variable equals / does not equal a value |
+| `{variable:key}` / `{!variable:key}` | Player variable exists / does not exist |
+| `{eventType:ENTER}` | Current trigger event type matches |
+| `{volumeTag:key=value}` / `{volumeTag:key}` | Active volume tag matches / exists |
+
+Example: hide all stealthed players from viewers that do not have the reveal tag:
+
+```json
+{
+  "type": "player_hide_entity",
+  "eventType": "ENTER",
+  "TargetSelector": "players",
+  "ViewerRule": "{!hasTag:see_stealth}",
+  "TargetRule": "{hasTag:stealthed}"
+}
+```
+
+### Volume Visibility Policy Tags
+
+Volume tags can enforce visibility policy without adding a custom effect to every volume:
+
+| Volume tag | Behavior |
+|---|---|
+| `IsStoryArea:true` | Players inside the same volume are hidden from each other by default |
+| `IsStoryArea:false` | Forces players inside the same volume to be visible, overriding normal hide rules |
+| `GroupArea:true` | Treats the volume as a party/group instance |
+| `PartyAmount:<amount>` | Maximum visible members per party inside that group area |
+
+`GroupArea:true` uses the per-player variable `partyId` as the group identity. Players with the same non-empty `partyId` can see each other up to `PartyAmount`; extra members are hidden by visibility policy only.
 
 ### Volume Interaction Blocking
 
@@ -264,8 +326,31 @@ The following placeholders are supported in `run_command`, `send_title` (`Title`
 | `{player}` | Triggering player's username |
 | `{uuid}` | Triggering entity UUID |
 | `{variable:key}` | Per-player variable value (empty string if not set) |
+| `{hasTag:tag}` / `{!hasTag:tag}` | `true` or `false` for the triggering player's tag state |
+| `{eventType}` | Current trigger event type |
+| `{tagKey}` / `{tagValue}` | Current tag event key/value |
+| `{volumeTag:key}` | First matching active volume tag value, or empty string |
 
 `send_rich_message` and `send_title` also support simple color/style codes: `&0`-`&9`, `&a`-`&f`, `&#RRGGBB`, `&l` bold, `&o` italic, `&n` underline, `&r` reset, and `&&` for a literal ampersand.
+
+---
+
+## Developer API
+
+Other server mods can use `org.hyzionstudios.hyextras.api.HyExtrasApi.get()` for stable access to HyExtras state and high-level packet helpers:
+
+```java
+HyExtrasApi api = HyExtrasApi.get();
+api.setVariable(playerUuid, "partyId", "alpha");
+api.addTag(playerUuid, "storyline_a_active");
+api.hidePlayerFrom(viewerUuid, targetUuid, true);
+api.protectPlayerFromTargeting(viewerUuid);
+api.sendActionBar(playerUuid, "Party: " + api.getVariableString(playerUuid, "partyId"));
+```
+
+The API exposes variables, tags, cooldowns, visibility overrides, targeting protection, high-level title/message/camera helpers, and rule evaluation. It does not expose raw packet sending in 1.0.2.
+
+See [docs/DEVELOPER_API.md](docs/DEVELOPER_API.md) for the full API reference, examples, persistence rules, and visibility policy notes.
 
 ---
 
