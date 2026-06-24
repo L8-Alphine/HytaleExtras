@@ -1,21 +1,139 @@
-MIT License
+HyExtras Source-Available Non-Commercial License
+Version 1.0
+Effective Date: 2026-06-17
 
-Copyright (c) 2026 Alphine
+Copyright (c) 2026 Alphine, Krystian Carter, and Hyzion Studios.
+All rights reserved except for the limited rights expressly granted below.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software, source code, documentation, examples, assets, snippets,
+configuration, and related files are collectively the "Software."
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+This is a source-available license. It is not an open-source license and is not
+intended to satisfy the Open Source Definition, because commercial use is
+restricted unless separately authorized.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1. Ownership
+
+Alphine, Krystian Carter, and Hyzion Studios retain all ownership rights, title,
+and interest in and to the Software, including all copyright and other
+intellectual property rights. No ownership rights are transferred by this
+license.
+
+2. Permitted Use
+
+Subject to the terms of this license, you may use, copy, read, study, modify,
+compile, run, test, and share the Software and modified versions of the Software
+for permitted purposes under this license.
+
+Permitted purposes include personal use, private learning, research, testing,
+contribution, review, non-profit community use, and server operation as allowed
+under Section 4.
+
+This license allows server owners and operators to use the Software on
+monetized servers, but it does not allow commercial exploitation of the
+Software's code, source files, snippets, compiled files, modified versions,
+forks, repackaged versions, or derivative works unless separately authorized.
+
+3. Attribution and Notices
+
+Any copy, substantial portion, snippet, fork, modification, or redistributed
+version of the Software must include:
+
+- the original copyright notice;
+- this license; and
+- a clear notice that the Software was originally authored by Alphine,
+  Krystian Carter, and Hyzion Studios.
+
+You may not remove, hide, or misrepresent copyright notices, license notices,
+author credits, or ownership notices included with the Software.
+
+4. Server Use and Commercial Server Operation
+
+You may use, install, run, configure, and operate the Software on personal,
+private, public, community, non-profit, or commercial game servers.
+
+For clarity, server owners and operators may use the Software on servers that
+receive donations, sell ranks, sell cosmetics, sell access, operate a store,
+display advertisements, use subscriptions, receive sponsorships, or otherwise
+generate revenue, provided that the revenue is generated from operating the
+server or community and not from selling, licensing, sublicensing, leasing,
+reselling, redistributing, or commercially exploiting the Software itself, its
+source code, snippets, compiled files, modified versions, or derivative works.
+
+Use of the Software as part of operating a monetized server does not grant any
+commercial rights to the Software's source code, compiled code, snippets,
+modules, assets, documentation, examples, configuration, or derivative works.
+
+5. Commercial Code Use Requires Separate Rights
+
+You may not sell, license, sublicense, rent, lease, resell, monetize,
+repackage, include in paid client work, include in a paid software product,
+include in a paid mod, include in a paid plugin, host as a paid software
+service, or otherwise make profit from the Software itself or any source file,
+module, snippet, function, class, method, configuration, example,
+documentation, asset, compiled version, modified version, renamed copy, fork,
+or derivative work of the Software unless you have an active Code Rights
+Subscription or a separate written commercial license from Alphine, Krystian
+Carter, or Hyzion Studios.
+
+A "Code Rights Subscription" means an active paid subscription, agreement, or
+other written authorization expressly granting commercial rights to use the
+Software's code commercially. Commercial code rights last only while that
+subscription, agreement, or authorization remains active, unless the written
+terms say otherwise.
+
+Without a Code Rights Subscription or separate written commercial license, you
+may not profit from:
+
+* the Software as a standalone product;
+* the Software's source code or compiled code;
+* any source file, module, snippet, function, class, method, configuration,
+  example, documentation, or asset from the Software;
+* modified, renamed, rebranded, repackaged, or forked copies of the Software;
+* compiled, packaged, bundled, or hosted versions of the Software;
+* derivative works based on the Software; or
+* paid development, consulting, or client work that uses the Software's code as
+  part of the deliverable.
+
+This restriction does not prevent server owners from using the Software on
+monetized servers as described in Section 4.
+
+6. No Implied Trademark Rights
+
+This license does not grant permission to use the names, logos, brands, or
+trademarks of Alphine, Krystian Carter, Hyzion Studios, HyExtras, or any related
+project except as necessary to provide required attribution.
+
+7. Contributions
+
+Unless a separate written agreement says otherwise, any contribution submitted
+to this project is provided under this same license, and the contributor grants
+Alphine, Krystian Carter, and Hyzion Studios a perpetual, worldwide,
+non-exclusive, royalty-free license to use, reproduce, modify, distribute,
+sublicense, and commercially license that contribution as part of the Software.
+
+8. Termination
+
+If you violate this license, your rights under this license terminate
+automatically. After termination, you must stop using, copying, modifying,
+distributing, or monetizing the Software and must remove the Software from any
+project, product, service, package, or repository where your use violates this
+license.
+
+Sections concerning ownership, commercial restrictions, attribution, trademark
+rights, contributions, warranty disclaimers, liability limits, and termination
+survive termination.
+
+9. No Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR
+A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. USE OF THE SOFTWARE IS AT
+YOUR OWN RISK.
+
+10. Limitation of Liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, ALPHINE, KRYSTIAN CARTER, HYZION
+STUDIOS, AUTHORS, COPYRIGHT HOLDERS, AND CONTRIBUTORS WILL NOT BE LIABLE FOR
+ANY CLAIM, DAMAGES, LOSSES, OR OTHER LIABILITY ARISING FROM OR RELATED TO THE
+SOFTWARE OR THIS LICENSE, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE.

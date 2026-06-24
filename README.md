@@ -150,5 +150,6 @@ Use the included IDE run configurations:
 
 ## License & credits
 
-Authored by **Alphine**. See [LICENSE](LICENSE). HyExtras is an independent community project and is
+Authored by **Alphine**, **Krystian Carter**, and **Hyzion Studios**. HyExtras is source-available for
+non-commercial use under the custom terms in [LICENSE](LICENSE). HyExtras is an independent community project and is
 not affiliated with or endorsed by Hypixel Studios; "Hytale" is a trademark of its respective owner.
