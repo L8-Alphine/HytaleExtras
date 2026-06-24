@@ -1,7 +1,7 @@
 {
   "Group": "org.hyzionstudios",
   "Name": "hyextras",
-  "Version": "1.0.0",
+  "Version": "1.0.2",
   "Main": "org.hyzionstudios.hyextras.HyExtrasPlugin",
   "ServerVersion": ">=0.5.0 <0.6.0",
   "Description": "Extends the native Trigger Volume system with per-player variables, named cooldowns, command execution, volume chaining, and more.",
