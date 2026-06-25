@@ -95,6 +95,20 @@ public final class ConfigLoader {
                 "floatingItems.defaultRotationDegreesPerSecond",
                 cfg.floatingItemsDefaultRotationDegreesPerSecond);
         cfg.floatingItemsMaxItems = getInt(props, "floatingItems.maxItems", cfg.floatingItemsMaxItems);
+        cfg.playerVisibilitySyncIntervalMs = getLong(
+                props, "playerVisibilitySyncIntervalMs", cfg.playerVisibilitySyncIntervalMs);
+        cfg.interactionReplayWindowMs = getLong(
+                props, "interactionReplayWindowMs", cfg.interactionReplayWindowMs);
+        cfg.playerVariablesPersistent = getBoolean(
+                props, "playerVariablesPersistent", cfg.playerVariablesPersistent);
+        cfg.persistenceAsync = getBoolean(props, "persistence.async", cfg.persistenceAsync);
+        cfg.persistenceSaveDebounceMs = getLong(
+                props, "persistence.saveDebounceMs", cfg.persistenceSaveDebounceMs);
+        cfg.variableRegexEnabled = getBoolean(props, "variable.regexEnabled", cfg.variableRegexEnabled);
+        cfg.tagNpcStateRetentionSeconds = getLong(
+                props, "tagNpc.stateRetentionSeconds", cfg.tagNpcStateRetentionSeconds);
+        cfg.tagNpcStatePersistent = getBoolean(
+                props, "tagNpc.statePersistent", cfg.tagNpcStatePersistent);
         return cfg;
     }
 
@@ -285,6 +299,7 @@ public final class ConfigLoader {
                 # PlaceholderAPI missing behavior: KEEP_ORIGINAL, EMPTY, or ERROR.
                 """);
         appendImageIconsDefaults(missing, props, cfg);
+        appendFineTuningDefaults(missing, props, cfg);
 
         if (missing.isEmpty()) {
             return;
@@ -467,6 +482,51 @@ public final class ConfigLoader {
                 """);
     }
 
+    private static void appendFineTuningDefaults(StringBuilder missing, Properties props, HyExtrasConfig cfg) {
+        appendMissing(missing, props, "playerVisibilitySyncIntervalMs",
+                String.valueOf(cfg.playerVisibilitySyncIntervalMs), """
+
+                # Fine-tuning
+                # Interval in milliseconds between player visibility policy sync passes (clamped to a minimum).
+                """);
+        appendMissing(missing, props, "interactionReplayWindowMs",
+                String.valueOf(cfg.interactionReplayWindowMs), """
+
+                # Milliseconds within which an identical interaction is de-duplicated as a replay.
+                """);
+        appendMissing(missing, props, "playerVariablesPersistent",
+                String.valueOf(cfg.playerVariablesPersistent), """
+
+                # Persist per-player variables to disk (opt-in). False keeps variables memory-only.
+                # Tip: prefix a variable key with "persist:" to persist just that key without enabling this globally.
+                """);
+        appendMissing(missing, props, "persistence.async",
+                String.valueOf(cfg.persistenceAsync), """
+
+                # Offload per-player tag/variable disk I/O to a background thread instead of the event thread.
+                """);
+        appendMissing(missing, props, "persistence.saveDebounceMs",
+                String.valueOf(cfg.persistenceSaveDebounceMs), """
+
+                # Debounce window in milliseconds coalescing repeated saves for the same player.
+                """);
+        appendMissing(missing, props, "variable.regexEnabled",
+                String.valueOf(cfg.variableRegexEnabled), """
+
+                # Allow the regex operator in variable conditions.
+                """);
+        appendMissing(missing, props, "tagNpc.stateRetentionSeconds",
+                String.valueOf(cfg.tagNpcStateRetentionSeconds), """
+
+                # Seconds of inactivity before runtime TagNPC entity state is pruned.
+                """);
+        appendMissing(missing, props, "tagNpc.statePersistent",
+                String.valueOf(cfg.tagNpcStatePersistent), """
+
+                # Persist TagNPC state to disk for stable/named entities (opt-in, best-effort).
+                """);
+    }
+
     private static void appendMissing(
             StringBuilder out,
             Properties props,
@@ -590,6 +650,32 @@ public final class ConfigLoader {
 
                         # Maximum runtime floating items tracked by HyExtras.
                         floatingItems.maxItems=%s
+
+                        # Fine-tuning
+                        # Interval in milliseconds between player visibility policy sync passes (clamped to a minimum).
+                        playerVisibilitySyncIntervalMs=%s
+
+                        # Milliseconds within which an identical interaction is de-duplicated as a replay.
+                        interactionReplayWindowMs=%s
+
+                        # Persist per-player variables to disk (opt-in). False keeps variables memory-only.
+                        # Tip: prefix a variable key with "persist:" to persist just that key without enabling this globally.
+                        playerVariablesPersistent=%s
+
+                        # Offload per-player tag/variable disk I/O to a background thread instead of the event thread.
+                        persistence.async=%s
+
+                        # Debounce window in milliseconds coalescing repeated saves for the same player.
+                        persistence.saveDebounceMs=%s
+
+                        # Allow the regex operator in variable conditions.
+                        variable.regexEnabled=%s
+
+                        # Seconds of inactivity before runtime TagNPC entity state is pruned.
+                        tagNpc.stateRetentionSeconds=%s
+
+                        # Persist TagNPC state to disk for stable/named entities (opt-in, best-effort).
+                        tagNpc.statePersistent=%s
                         """.formatted(
                         cfg.advancedPacketActions,
                         cfg.entityPacketFiltering,
@@ -629,7 +715,15 @@ public final class ConfigLoader {
                         cfg.floatingItemsDefaultVisibilityRadius,
                         cfg.floatingItemsDefaultBobAmplitude,
                         cfg.floatingItemsDefaultRotationDegreesPerSecond,
-                        cfg.floatingItemsMaxItems));
+                        cfg.floatingItemsMaxItems,
+                        cfg.playerVisibilitySyncIntervalMs,
+                        cfg.interactionReplayWindowMs,
+                        cfg.playerVariablesPersistent,
+                        cfg.persistenceAsync,
+                        cfg.persistenceSaveDebounceMs,
+                        cfg.variableRegexEnabled,
+                        cfg.tagNpcStateRetentionSeconds,
+                        cfg.tagNpcStatePersistent));
             }
         } catch (IOException e) {
             HyExtrasPlugin.get().getLogger()
