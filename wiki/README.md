@@ -29,6 +29,7 @@ These Markdown files are the source content for the public
 | `conditions` | Conditions Reference |
 | `commands` | Commands Reference |
 | `configuration` | Configuration Reference |
+| `fine-tuning` | Fine-Tuning |
 | `string-templates` | String Templates, Rules & Color Codes |
 | `player-state` | Player State: Variables, Tags & Cooldowns |
 | `visibility-and-packets` | Visibility & Packets |

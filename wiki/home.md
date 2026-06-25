@@ -75,6 +75,7 @@ command tree.
 - [Conditions](conditions) — all 14 trigger conditions.
 - [Commands](commands) — the full `/hextras` command tree.
 - [Configuration](configuration) — every `hyextras.properties` key.
+- [Fine-Tuning](fine-tuning) — new config knobs, persistence, operators, events, NPC interaction.
 - [String Templates](string-templates) — placeholders, rule predicates, color codes.
 
 ### Systems

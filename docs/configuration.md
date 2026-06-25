@@ -9,7 +9,7 @@ never clobber server-owner changes.
 - **Module toggles** persist individual keys via the `/hextras module enable|disable` commands.
 - Invalid values fall back to the default and log a warning; booleans accept `true`/`false`.
 
-**Sections:** [Global flags](#global-flags) · [Internal modules](#internal-modules) ·
+**Sections:** [Global flags](#global-flags) · [Fine-tuning](#fine-tuning) · [Internal modules](#internal-modules) ·
 [String templates](#string-templates) · [ImageIcons](#imageicons) · [TagNPC](#tagnpc) ·
 [FloatingItems](#floatingitems) · [Full default file](#full-default-file)
 
@@ -24,6 +24,23 @@ never clobber server-owner changes.
 | `startupDiagnostics` | boolean | `true` | Prints preflight diagnostics (config, dependencies, packet filters, duplicate installs, plugin availability) at startup. |
 | `playerVisibilityPolicySync` | boolean | `true` | Periodically applies `IsStoryArea`/`GroupArea` [volume visibility policy](systems/visibility-and-packets.md#volume-visibility-policy-tags) to player-to-player packets so volume tags work without a custom effect. |
 | `debugMode` | boolean | `false` | Verbose runtime logging (connect/disconnect cleanup, interaction bridge, unknown rule tokens). |
+
+---
+
+## Fine-tuning
+
+Knobs added in the fine-tuning pass. See [Fine-Tuning](fine-tuning.md) for the behavior behind each.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `playerVisibilitySyncIntervalMs` | long | `500` | Interval between player visibility policy sync passes; clamped to ≥ 50 ms. Re-applied on reload. |
+| `interactionReplayWindowMs` | long | `50` | Window in which a repeated identical interaction is de-duplicated as a replay. |
+| `playerVariablesPersistent` | boolean | `false` | Persist all player variables to disk. Otherwise only `persist:`-prefixed keys persist. |
+| `persistence.async` | boolean | `true` | Offload tag/variable disk writes to a background thread (disconnect still flushes synchronously). |
+| `persistence.saveDebounceMs` | long | `1000` | Coalesce repeated background saves for the same player. |
+| `variable.regexEnabled` | boolean | `true` | Allow the `regex` operator in variable conditions. |
+| `tagNpc.stateRetentionSeconds` | long | `10` | Inactivity seconds before runtime TagNPC entity state is pruned. |
+| `tagNpc.statePersistent` | boolean | `false` | Reserved for opt-in TagNPC disk persistence of stable/named entities. |
 
 ---
 

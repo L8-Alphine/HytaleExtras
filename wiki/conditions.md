@@ -25,7 +25,7 @@ Tests a per-player variable.
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `Key` | string | Yes | — | Variable name. |
-| `Operator` | enum `exists` \| `not_exists` \| `equals` \| `not_equals` \| `greater_than` \| `less_than` | Yes | — | Comparison. `exists`/`not_exists` ignore `Value`. |
+| `Operator` | enum `exists` \| `not_exists` \| `equals` \| `not_equals` \| `greater_than` \| `less_than` \| `greater_or_equal` \| `less_or_equal` \| `divisible_by` \| `contains` \| `regex` | Yes | — | Comparison. `exists`/`not_exists` ignore `Value`; `regex` requires `variable.regexEnabled`. |
 | `Value` | string | No* | — | Right-hand side for comparison operators (*required for those). |
 
 ```json
@@ -194,7 +194,7 @@ Tests a runtime entity variable.
 |---|---|---|---|---|
 | *(targeting trio)* | | | | See shared fields. |
 | `Key` | string | Yes | — | Variable name. |
-| `Operator` | enum `exists` \| `not_exists` \| `equals` \| `not_equals` \| `greater_than` \| `less_than` | Yes | — | Comparison. |
+| `Operator` | enum `exists` \| `not_exists` \| `equals` \| `not_equals` \| `greater_than` \| `less_than` \| `greater_or_equal` \| `less_or_equal` \| `divisible_by` \| `contains` \| `regex` | Yes | — | Comparison (same set as `variable_condition`). |
 | `Value` | string | No* | — | Right-hand side (*required for comparison operators). |
 
 ```json

@@ -17,6 +17,7 @@ servers. New here? Start with the [Getting Started](getting-started.md) guide.
 | [Conditions](conditions.md) | All 14 trigger conditions with parameter tables and examples. |
 | [Commands](commands.md) | The full `/hextras` command tree. |
 | [Configuration](configuration.md) | Every `hyextras.properties` key and default. |
+| [Fine-Tuning](fine-tuning.md) | New config knobs, opt-in persistence, richer operators, change events, and NPC/mob interaction. |
 | [String Templates](string-templates.md) | Placeholders, rule predicates, and color/style codes. |
 
 ## Systems
