@@ -16,6 +16,8 @@ public final class InteractableVolumeState {
     public static final String TAG_KEY = "hextras:interaction_key";
     public static final String TAG_NAME = "hextras:interaction_name";
     public static final String TAG_INTERACTION_TYPE = "hextras:interaction_type";
+    /** When truthy, the interaction prompt is shown only after the effect chain's conditions pass. */
+    public static final String TAG_PROMPT_CONDITIONAL = "hextras:interaction_prompt_conditional";
     public static final String DEFAULT_MESSAGE = "interactionHints.generic";
     public static final String DEFAULT_ACTION = "interact";
     public static final String DEFAULT_KEY = "Use";
@@ -55,7 +57,8 @@ public final class InteractableVolumeState {
                             valueOrDefault(runtime.action, DEFAULT_ACTION),
                             valueOrDefault(runtime.key, DEFAULT_KEY),
                             valueOrDefault(runtime.name, valueOrDefault(runtime.action, DEFAULT_ACTION)),
-                            runtime.interactionType)
+                            runtime.interactionType,
+                            false)
                     : null;
         }
 
@@ -68,7 +71,8 @@ public final class InteractableVolumeState {
                 valueOrDefault(blankToNull(tags.get(TAG_ACTION)), DEFAULT_ACTION),
                 valueOrDefault(blankToNull(tags.get(TAG_KEY)), DEFAULT_KEY),
                 valueOrDefault(blankToNull(tags.get(TAG_NAME)), valueOrDefault(blankToNull(tags.get(TAG_ACTION)), DEFAULT_ACTION)),
-                normalize(blankToNull(tags.get(TAG_INTERACTION_TYPE))));
+                normalize(blankToNull(tags.get(TAG_INTERACTION_TYPE))),
+                isTruthy(tags.get(TAG_PROMPT_CONDITIONAL)));
     }
 
     public boolean matchesInteraction(@Nullable Config config, InteractionType interactionType) {
@@ -117,5 +121,6 @@ public final class InteractableVolumeState {
             String action,
             String key,
             String name,
-            @Nullable String interactionType) {}
+            @Nullable String interactionType,
+            boolean conditionalPrompt) {}
 }
