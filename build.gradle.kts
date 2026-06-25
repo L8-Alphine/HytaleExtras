@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "org.hyzionstudios"
-version = "1.0.2-alpha.1"
+version = "1.0.2-alpha.2"
 
 repositories {
     mavenCentral()
@@ -26,6 +26,14 @@ dependencies {
 
     // PlaceholderAPI
     compileOnly("at.helpch:placeholderapi-hytale:1.0.8")
+
+    // Unit tests (pure-logic utilities only; no live server required)
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 java {
