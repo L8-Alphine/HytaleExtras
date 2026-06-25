@@ -5,6 +5,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.hyzionstudios.hyextras.HyExtrasPlugin;
+import org.hyzionstudios.hyextras.event.HyExtrasEvents;
 import org.hyzionstudios.hyextras.floatingitems.FloatingItemInstance;
 import org.hyzionstudios.hyextras.floatingitems.FloatingItemResult;
 import org.hyzionstudios.hyextras.floatingitems.FloatingItemTuning;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +43,8 @@ import java.util.stream.Collectors;
  *
  * <p>Persistence rules:</p>
  * <ul>
- *   <li>Variables are runtime-only and clear on disconnect.</li>
+ *   <li>Variables are runtime-only and clear on disconnect by default; enable
+ *       {@code playerVariablesPersistent} or use a {@code persist:}-prefixed key to persist them.</li>
  *   <li>Cooldowns are runtime-only and clear on disconnect.</li>
  *   <li>Tags are persisted by HyExtras and survive reconnects/server restarts.</li>
  *   <li>Visibility overrides are runtime-only and clear on disconnect.</li>
@@ -131,6 +134,15 @@ public final class HyExtrasApi {
     /** Returns a defensive snapshot of runtime variables for a player. */
     public Map<String, Object> snapshotVariables(UUID player) {
         return plugin().getVariableService().snapshot(player);
+    }
+
+    /**
+     * Persists the player's currently-persisting variables to disk without clearing them.
+     * Only variables covered by {@code playerVariablesPersistent} or the {@code persist:} key prefix
+     * are written.
+     */
+    public void saveVariables(UUID player) {
+        plugin().getVariableService().savePlayer(player);
     }
 
     /** Adds a persistent player tag. */
@@ -459,6 +471,17 @@ public final class HyExtrasApi {
         return plugin().getTagNpcService().clearVariables(entity);
     }
 
+    /** Sets a developer-defined display name for a tracked TagNPC entity (blank clears it). */
+    public TagNpcResult setEntityDisplayName(UUID entity, String displayName) {
+        return plugin().getTagNpcService().setDisplayName(entity, displayName);
+    }
+
+    /** Returns the developer-defined display name for a TagNPC entity, or null when unset. */
+    @Nullable
+    public String getEntityDisplayName(UUID entity) {
+        return plugin().getTagNpcService().getDisplayName(entity);
+    }
+
     /** Hides a UUID-backed entity from one viewer through PacketAPI entity visibility state. */
     public TagNpcResult hideEntityFromViewer(UUID viewer, UUID entity) {
         return plugin().getTagNpcService().hideEntityFromViewer(viewer, entity);
@@ -551,6 +574,17 @@ public final class HyExtrasApi {
             Vector3d origin,
             double radius) {
         return plugin().getFloatingItemService().snapshotFloatingItemsNear(store, origin, radius);
+    }
+
+    /**
+     * Subscribes to a HyExtras state-change event. Event types live in {@link HyExtrasEvents}
+     * (e.g. {@link HyExtrasEvents.PlayerVariableChangeEvent}, {@link HyExtrasEvents.InteractionEvent}).
+     * Listeners run synchronously on the thread that posts the event and are isolated from each other.
+     *
+     * @return a handle whose {@link AutoCloseable#close()} unregisters the listener
+     */
+    public <E> AutoCloseable subscribe(Class<E> eventType, Consumer<E> listener) {
+        return plugin().getEventBus().subscribe(eventType, listener);
     }
 
     private static HyExtrasPlugin plugin() {
