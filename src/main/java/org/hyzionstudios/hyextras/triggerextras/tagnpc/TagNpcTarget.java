@@ -3,6 +3,7 @@ package org.hyzionstudios.hyextras.triggerextras.tagnpc;
 import com.hypixel.hytale.builtin.triggervolumes.effect.TriggerContext;
 import org.hyzionstudios.hyextras.HyExtrasPlugin;
 import org.hyzionstudios.hyextras.TriggerVolumeApiAdapter;
+import org.hyzionstudios.hyextras.triggerextras.TriggerExtrasInteractionBridge;
 import org.hyzionstudios.hyextras.util.StringTemplate;
 
 import java.util.LinkedHashSet;
@@ -13,12 +14,14 @@ import java.util.UUID;
 public enum TagNpcTarget {
     TRIGGERING_ENTITY,
     ENTITY_UUID,
-    TARGET_TAG;
+    TARGET_TAG,
+    INTERACTED_ENTITY;
 
     public static final Map<TagNpcTarget, String> ALIASES = Map.of(
             TRIGGERING_ENTITY, "triggering_entity",
             ENTITY_UUID, "entity_uuid",
-            TARGET_TAG, "target_tag"
+            TARGET_TAG, "target_tag",
+            INTERACTED_ENTITY, "interacted_entity"
     );
 
     public static Set<UUID> resolveMany(
@@ -41,8 +44,23 @@ public enum TagNpcTarget {
         if (resolvedTarget == ENTITY_UUID) {
             return Set.of();
         }
+        if (resolvedTarget == INTERACTED_ENTITY) {
+            UUID interacted = resolveInteractedEntity(ctx);
+            return interacted == null ? Set.of() : Set.of(interacted);
+        }
         UUID triggering = TriggerVolumeApiAdapter.getEntityUuid(ctx);
         return triggering == null ? Set.of() : Set.of(triggering);
+    }
+
+    /** Reads the triggering player's most-recently interacted entity (set by the interaction bridge). */
+    private static UUID resolveInteractedEntity(TriggerContext ctx) {
+        UUID player = TriggerVolumeApiAdapter.getEntityUuid(ctx);
+        if (player == null) {
+            return null;
+        }
+        Object raw = HyExtrasPlugin.get().getVariableService()
+                .get(player, TriggerExtrasInteractionBridge.INTERACTED_ENTITY_VAR);
+        return raw == null ? null : parseUuid(raw.toString());
     }
 
     public static UUID resolveOne(TriggerContext ctx, String entityUuid) {

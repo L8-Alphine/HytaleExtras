@@ -10,6 +10,7 @@ import com.hypixel.hytale.server.core.io.adapter.PacketFilter;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.hyzionstudios.hyextras.HyExtrasPlugin;
+import org.hyzionstudios.hyextras.util.EntityResolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,16 +102,12 @@ public final class PacketVisibilityService {
     }
 
     private boolean shouldSuppress(UUID viewerUuid, Store<EntityStore> store, int networkId) {
-        EntityStore entityStore = store.getExternalData();
-        if (entityStore == null) {
-            return false;
-        }
-        Ref<EntityStore> targetRef = entityStore.getRefFromNetworkId(networkId);
-        if (targetRef == null || !targetRef.isValid()) {
+        Ref<EntityStore> targetRef = EntityResolver.resolveByNetworkId(store, networkId);
+        if (targetRef == null) {
             return false;
         }
 
-        PlayerRef targetPlayer = store.getComponent(targetRef, PlayerRef.getComponentType());
+        PlayerRef targetPlayer = EntityResolver.playerRef(store, targetRef);
         if (targetPlayer != null) {
             boolean hidden = visibilityPolicy.shouldHidePlayer(viewerUuid, targetPlayer.getUuid());
             visibilityPolicy.syncPlayerPacketPolicy(viewerUuid, targetPlayer.getUuid(), hidden);

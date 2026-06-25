@@ -6,25 +6,27 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import org.hyzionstudios.hyextras.HyExtrasPlugin;
 import org.hyzionstudios.hyextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hyextras.codec.CodecHelper;
+import org.hyzionstudios.hyextras.config.HyExtrasConfig;
 import org.hyzionstudios.hyextras.service.PlayerVariableService;
+import org.hyzionstudios.hyextras.util.ComparisonOperator;
 
 import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 
 /**
  * Condition that tests a per-player variable against a value.
  *
- * <p>Supported operators:
+ * <p>Supported operators (see {@link ComparisonOperator}):
  * <ul>
- *   <li>{@code exists} — variable is set (any value)</li>
- *   <li>{@code not_exists} — variable is not set</li>
- *   <li>{@code equals} — variable equals {@code Value} (string comparison)</li>
- *   <li>{@code not_equals} — variable does not equal {@code Value}</li>
- *   <li>{@code greater_than} — variable (numeric) > {@code Value} (numeric)</li>
- *   <li>{@code less_than} — variable (numeric) < {@code Value} (numeric)</li>
+ *   <li>{@code exists} / {@code not_exists} — variable is / is not set</li>
+ *   <li>{@code equals} / {@code not_equals} — string comparison against {@code Value}</li>
+ *   <li>{@code greater_than} / {@code less_than} / {@code greater_or_equal} / {@code less_or_equal}
+ *       — numeric comparison</li>
+ *   <li>{@code divisible_by} — variable (numeric) is divisible by {@code Value} (non-zero)</li>
+ *   <li>{@code contains} — variable (string) contains {@code Value}</li>
+ *   <li>{@code regex} — variable matches the {@code Value} regular expression
+ *       (requires {@code variable.regexEnabled})</li>
  * </ul>
  *
  * <p>JSON config:
@@ -37,13 +39,13 @@ public class VariableCondition extends TriggerCondition {
     public static final BuilderCodec<VariableCondition> CODEC = BuilderCodec.builder(
                     VariableCondition.class, VariableCondition::new, TriggerCondition.BASE_CODEC)
             .append(CodecHelper.string("Key"),         VariableCondition::setKey,      VariableCondition::getKey).add()
-            .append(CodecHelper.enumField("Operator", Operator.class, Operator.ALIASES),
+            .append(CodecHelper.enumField("Operator", ComparisonOperator.class, ComparisonOperator.ALIASES),
                     VariableCondition::setOperator, VariableCondition::getOperator).add()
             .append(CodecHelper.optString("Value"),    VariableCondition::setValue,    VariableCondition::getValue).add()
             .build();
 
     private String key;
-    private Operator operator;
+    private ComparisonOperator operator;
     @Nullable private String value;
 
     public VariableCondition() {}
@@ -62,14 +64,7 @@ public class VariableCondition extends TriggerCondition {
             if (uuid == null) return false;
 
             PlayerVariableService vars = HyExtrasPlugin.get().getVariableService();
-            return switch (operator) {
-                case EXISTS -> vars.get(uuid, key) != null;
-                case NOT_EXISTS -> vars.get(uuid, key) == null;
-                case EQUALS -> Objects.equals(vars.getString(uuid, key), value);
-                case NOT_EQUALS -> !Objects.equals(vars.getString(uuid, key), value);
-                case GREATER_THAN -> vars.getLong(uuid, key) > parseLong(value);
-                case LESS_THAN -> vars.getLong(uuid, key) < parseLong(value);
-            };
+            return operator.evaluate(vars.getString(uuid, key), value, regexEnabled());
         } catch (Exception e) {
             HyExtrasPlugin.get().getLogger()
                     .at(Level.WARNING).withCause(e)
@@ -78,9 +73,9 @@ public class VariableCondition extends TriggerCondition {
         }
     }
 
-    private long parseLong(@Nullable String s) {
-        if (s == null || s.isBlank()) return 0L;
-        try { return Long.parseLong(s.trim()); } catch (NumberFormatException e) { return 0L; }
+    private static boolean regexEnabled() {
+        HyExtrasConfig cfg = HyExtrasPlugin.get().getExtrasConfig();
+        return cfg == null || cfg.variableRegexEnabled;
     }
 
     private void warn(String reason) {
@@ -92,27 +87,9 @@ public class VariableCondition extends TriggerCondition {
     public String getKey() { return key; }
     public void setKey(String key) { this.key = key; }
 
-    public Operator getOperator() { return operator; }
-    public void setOperator(Operator operator) { this.operator = operator; }
+    public ComparisonOperator getOperator() { return operator; }
+    public void setOperator(ComparisonOperator operator) { this.operator = operator; }
 
     @Nullable public String getValue() { return value; }
     public void setValue(@Nullable String value) { this.value = value; }
-
-    public enum Operator {
-        EXISTS,
-        NOT_EXISTS,
-        EQUALS,
-        NOT_EQUALS,
-        GREATER_THAN,
-        LESS_THAN;
-
-        private static final Map<Operator, String> ALIASES = Map.of(
-                EXISTS, "exists",
-                NOT_EXISTS, "not_exists",
-                EQUALS, "equals",
-                NOT_EQUALS, "not_equals",
-                GREATER_THAN, "greater_than",
-                LESS_THAN, "less_than"
-        );
-    }
 }

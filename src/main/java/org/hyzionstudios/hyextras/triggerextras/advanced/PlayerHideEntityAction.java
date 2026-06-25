@@ -84,7 +84,15 @@ public class PlayerHideEntityAction extends TriggerEffect {
             maybeProtectFromTargeting(viewerUuid);
 
             if (selector == TargetSelector.ENTITIES) {
-                warn("TargetSelector=entities has no explicit entity target in trigger UI; PreventTargeting protects the viewer from NPC target memory");
+                // ENTITIES carries no explicit per-entity target here; the meaningful effect is the
+                // targeting protection applied above. For per-entity packet hiding use tagnpc_hide_entity
+                // (TargetTag / EntityUuid). Logged at debug only so legitimate use is not log spam.
+                if (HyExtrasPlugin.get().getExtrasConfig() != null
+                        && HyExtrasPlugin.get().getExtrasConfig().debugMode) {
+                    HyExtrasPlugin.get().getLogger().at(Level.INFO).log(
+                            "[player_hide_entity] TargetSelector=entities applied targeting protection only; "
+                                    + "use tagnpc_hide_entity for per-entity packet hiding");
+                }
                 return;
             }
 

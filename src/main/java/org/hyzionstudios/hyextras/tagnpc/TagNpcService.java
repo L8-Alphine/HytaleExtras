@@ -7,6 +7,8 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.hyzionstudios.hyextras.HyExtrasPlugin;
 import org.hyzionstudios.hyextras.config.HyExtrasConfig;
+import org.hyzionstudios.hyextras.event.HyExtrasEvents;
+import org.hyzionstudios.hyextras.event.HyExtrasEvents.ChangeType;
 import org.joml.Vector3d;
 
 import javax.annotation.Nullable;
@@ -58,7 +60,9 @@ public final class TagNpcService {
         if (entity == null || normalized == null) {
             return TagNpcResult.failure("Entity UUID and tag are required.");
         }
-        state(entity).tags.add(normalized);
+        if (state(entity).tags.add(normalized)) {
+            postEntityTag(entity, normalized, ChangeType.ADD);
+        }
         return TagNpcResult.success("Entity tag added.");
     }
 
@@ -71,9 +75,9 @@ public final class TagNpcService {
             return TagNpcResult.failure("Entity UUID and tag are required.");
         }
         MutableEntityState state = entities.get(entity);
-        if (state != null) {
-            state.tags.remove(normalized);
+        if (state != null && state.tags.remove(normalized)) {
             state.touch();
+            postEntityTag(entity, normalized, ChangeType.REMOVE);
         }
         return TagNpcResult.success("Entity tag removed.");
     }
@@ -97,6 +101,7 @@ public final class TagNpcService {
         if (state != null) {
             state.tags.clear();
             state.touch();
+            postEntityTag(entity, null, ChangeType.CLEAR);
         }
         return TagNpcResult.success("Entity tags cleared.");
     }
@@ -109,7 +114,9 @@ public final class TagNpcService {
         if (entity == null || normalized == null) {
             return TagNpcResult.failure("Entity UUID and variable key are required.");
         }
-        state(entity).variables.put(normalized, value == null ? "" : value);
+        Object stored = value == null ? "" : value;
+        state(entity).variables.put(normalized, stored);
+        postEntityVar(entity, normalized, stored, ChangeType.SET);
         return TagNpcResult.success("Entity variable set.");
     }
 
@@ -142,6 +149,7 @@ public final class TagNpcService {
         Object current = state.variables.get(normalized);
         long value = current instanceof Number n ? n.longValue() : result.get();
         state.touch();
+        postEntityVar(entity, normalized, value, ChangeType.SET);
         return value;
     }
 
@@ -151,9 +159,9 @@ public final class TagNpcService {
             return TagNpcResult.failure("Entity UUID and variable key are required.");
         }
         MutableEntityState state = entities.get(entity);
-        if (state != null) {
-            state.variables.remove(normalized);
+        if (state != null && state.variables.remove(normalized) != null) {
             state.touch();
+            postEntityVar(entity, normalized, null, ChangeType.REMOVE);
         }
         return TagNpcResult.success("Entity variable removed.");
     }
@@ -171,8 +179,28 @@ public final class TagNpcService {
         if (state != null) {
             state.variables.clear();
             state.touch();
+            postEntityVar(entity, null, null, ChangeType.CLEAR);
         }
         return TagNpcResult.success("Entity variables cleared.");
+    }
+
+    /** Sets a developer-defined display name for a tracked entity; blank clears it. */
+    public TagNpcResult setDisplayName(UUID entity, @Nullable String displayName) {
+        if (!enabled()) {
+            return TagNpcResult.failure("TagNPC module is disabled.");
+        }
+        if (entity == null) {
+            return TagNpcResult.failure("Entity UUID is required.");
+        }
+        state(entity).displayName = (displayName == null || displayName.isBlank()) ? null : displayName.trim();
+        return TagNpcResult.success("Entity display name updated.");
+    }
+
+    /** Returns the developer-defined display name for an entity, or null when unset. */
+    @Nullable
+    public String getDisplayName(UUID entity) {
+        MutableEntityState state = entity != null ? entities.get(entity) : null;
+        return state != null ? state.displayName : null;
     }
 
     public TagNpcResult hideEntityFromViewer(UUID viewer, UUID entity) {
@@ -314,6 +342,18 @@ public final class TagNpcService {
         return 0L;
     }
 
+    private void postEntityTag(UUID entity, @Nullable String tag, ChangeType type) {
+        if (plugin.getEventBus() != null) {
+            plugin.getEventBus().post(new HyExtrasEvents.EntityTagChangeEvent(entity, tag, type));
+        }
+    }
+
+    private void postEntityVar(UUID entity, @Nullable String key, @Nullable Object value, ChangeType type) {
+        if (plugin.getEventBus() != null) {
+            plugin.getEventBus().post(new HyExtrasEvents.EntityVariableChangeEvent(entity, key, value, type));
+        }
+    }
+
     private static String normalizeKey(String value) {
         if (value == null || value.isBlank()) {
             return null;
@@ -321,8 +361,14 @@ public final class TagNpcService {
         return value.trim().toLowerCase(Locale.ROOT);
     }
 
+    private long retentionSeconds() {
+        HyExtrasConfig cfg = plugin.getExtrasConfig();
+        long seconds = cfg != null ? cfg.tagNpcStateRetentionSeconds : 10L;
+        return Math.max(1L, seconds);
+    }
+
     private void pruneStaleIndexedEntities() {
-        Instant cutoff = Instant.now().minusSeconds(10);
+        Instant cutoff = Instant.now().minusSeconds(retentionSeconds());
         entityIndex.entrySet().removeIf(entry -> {
             IndexedEntity indexed = entry.getValue();
             boolean stale = indexed.seenAt.isBefore(cutoff)

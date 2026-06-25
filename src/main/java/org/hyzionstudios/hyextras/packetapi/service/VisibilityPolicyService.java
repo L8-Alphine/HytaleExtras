@@ -9,6 +9,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.hyzionstudios.hyextras.HyExtrasPlugin;
 import org.hyzionstudios.hyextras.config.HyExtrasConfig;
+import org.hyzionstudios.hyextras.event.HyExtrasEvents;
 import org.hyzionstudios.hyextras.service.PlayerVariableService;
 import org.hyzionstudios.hyextras.state.PlayerOverrideService;
 import org.hyzionstudios.hyextras.util.RuleEvaluationContext;
@@ -75,6 +76,7 @@ public final class VisibilityPolicyService {
         if (usePackets) {
             sendPlayerVisibilityPacket(viewer, target, true);
         }
+        postVisibility(viewer, target, true);
         return true;
     }
 
@@ -86,18 +88,27 @@ public final class VisibilityPolicyService {
         if (usePackets && !shouldHidePlayer(viewer, target)) {
             sendPlayerVisibilityPacket(viewer, target, false);
         }
+        postVisibility(viewer, target, false);
         return true;
     }
 
     public void hideEntity(UUID viewer, UUID entityUuid) {
         if (viewer != null && entityUuid != null && !viewer.equals(entityUuid)) {
             overrides.hideEntity(viewer, entityUuid);
+            postVisibility(viewer, entityUuid, true);
         }
     }
 
     public void showEntity(UUID viewer, UUID entityUuid) {
         if (viewer != null && entityUuid != null) {
             overrides.showEntity(viewer, entityUuid);
+            postVisibility(viewer, entityUuid, false);
+        }
+    }
+
+    private void postVisibility(UUID viewer, UUID target, boolean hidden) {
+        if (plugin.getEventBus() != null) {
+            plugin.getEventBus().post(new HyExtrasEvents.VisibilityChangeEvent(viewer, target, hidden));
         }
     }
 
@@ -251,7 +262,12 @@ public final class VisibilityPolicyService {
             if (raw == null || raw.isBlank()) continue;
             try {
                 limit = Math.max(limit, Integer.parseInt(raw.trim()));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException invalid) {
+                HyExtrasPlugin plugin = HyExtrasPlugin.get();
+                if (plugin != null && plugin.getExtrasConfig() != null && plugin.getExtrasConfig().debugMode) {
+                    plugin.getLogger().at(Level.WARNING)
+                            .log("[hextras visibility] ignoring non-integer PartyAmount tag: " + raw);
+                }
             }
         }
         return limit;

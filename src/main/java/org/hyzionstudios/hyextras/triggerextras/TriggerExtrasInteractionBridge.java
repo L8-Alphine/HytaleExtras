@@ -17,7 +17,9 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.hyzionstudios.hyextras.HyExtrasPlugin;
 import org.hyzionstudios.hyextras.TriggerVolumeApiAdapter;
 import org.hyzionstudios.hyextras.config.HyExtrasConfig;
+import org.hyzionstudios.hyextras.event.HyExtrasEvents;
 import org.hyzionstudios.hyextras.triggerextras.service.InteractionTriggerService;
+import org.hyzionstudios.hyextras.util.EntityResolver;
 import org.hyzionstudios.hyextras.util.StringTemplate;
 import org.joml.Vector3d;
 import org.joml.Vector3i;
@@ -34,7 +36,8 @@ import java.util.logging.Level;
 
 public final class TriggerExtrasInteractionBridge {
 
-    private static final long INTERACTION_REPLAY_WINDOW_NANOS = 50_000_000L;
+    /** Per-player variable holding the UUID of the entity the player most recently interacted with. */
+    public static final String INTERACTED_ENTITY_VAR = "hextras_interacted_entity";
 
     private final HyExtrasPlugin plugin;
     private final InteractionTriggerService interactionTriggerService = new InteractionTriggerService();
@@ -64,9 +67,30 @@ public final class TriggerExtrasInteractionBridge {
         Vector3d blockPos = targetBlock != null
                 ? new Vector3d(targetBlock.x + 0.5D, targetBlock.y + 0.5D, targetBlock.z + 0.5D)
                 : null;
-        if (dispatchInteractionVolumes(store, playerEntityRef, playerUuid, event.getActionType(), blockPos)) {
+        UUID targetEntityUuid = resolveInteractedEntity(store, event.getTargetRef(), playerUuid);
+        if (dispatchInteractionVolumes(store, playerEntityRef, playerUuid,
+                event.getActionType(), blockPos, targetEntityUuid)) {
             event.setCancelled(true);
         }
+    }
+
+    /**
+     * Resolves the entity a player interacted with (if any) and records it in the per-player
+     * {@code hextras_interacted_entity} variable so interaction triggers can target the NPC/mob —
+     * e.g. via {@code Target=interacted_entity} or {@code EntityUuid: "{variable:hextras_interacted_entity}"}.
+     */
+    @Nullable
+    private UUID resolveInteractedEntity(Store<EntityStore> store,
+                                         @Nullable Ref<EntityStore> targetRef, UUID playerUuid) {
+        if (targetRef == null) {
+            return null;
+        }
+        UUID entityUuid = EntityResolver.uuid(store, targetRef);
+        if (entityUuid == null || entityUuid.equals(playerUuid)) {
+            return null;
+        }
+        plugin.getVariableService().set(playerUuid, INTERACTED_ENTITY_VAR, entityUuid.toString());
+        return entityUuid;
     }
 
     public boolean handleUseBlockPre(Store<EntityStore> store, UseBlockEvent.Pre event) {
@@ -92,7 +116,8 @@ public final class TriggerExtrasInteractionBridge {
         Vector3d blockPos = targetBlock != null
                 ? new Vector3d(targetBlock.x + 0.5D, targetBlock.y + 0.5D, targetBlock.z + 0.5D)
                 : null;
-        boolean cancel = dispatchInteractionVolumes(store, playerEntityRef, pr.getUuid(), event.getInteractionType(), blockPos);
+        boolean cancel = dispatchInteractionVolumes(
+                store, playerEntityRef, pr.getUuid(), event.getInteractionType(), blockPos, null);
         logInteractionDebug("UseBlockEvent.Pre type=" + event.getInteractionType().name()
                 + " target=" + targetBlock + " cancel=" + cancel);
         return cancel;
@@ -140,14 +165,15 @@ public final class TriggerExtrasInteractionBridge {
             Ref<EntityStore> playerEntityRef,
             UUID playerUuid,
             InteractionType interactionType,
-            @Nullable Vector3d blockPos) {
+            @Nullable Vector3d blockPos,
+            @Nullable UUID targetEntityUuid) {
         if (!plugin.isModuleEnabled(HyExtrasConfig.MODULE_TRIGGER_EXTRAS)) {
             return false;
         }
         long now = System.nanoTime();
         String interactionKey = interactionKey(interactionType, blockPos);
         Boolean replay = interactionTriggerService.getRecentResult(
-                playerUuid, interactionKey, now, INTERACTION_REPLAY_WINDOW_NANOS);
+                playerUuid, interactionKey, now, replayWindowNanos());
         if (replay != null) {
             logInteractionDebug("Interaction replay type=" + interactionType.name()
                     + " key=" + interactionKey + " cancel=" + replay);
@@ -188,6 +214,7 @@ public final class TriggerExtrasInteractionBridge {
         String typeName = interactionType.name();
 
         interactionTriggerService.beginInteraction(playerUuid);
+        String dispatchedVolumeId = null;
         try {
             for (VolumeEntry volume : activeVolumes) {
                 Map<String, String> rawTags = volume.getRawTags();
@@ -197,18 +224,30 @@ public final class TriggerExtrasInteractionBridge {
                         interactableConfig,
                         interactionType);
                 if (!taggedForDispatch && (interactableConfig == null || !interactableForDispatch)) continue;
-                if (interactableConfig != null && interactableForDispatch) {
+
+                boolean promptable = interactableConfig != null && interactableForDispatch;
+                boolean conditionalPrompt = promptable && interactableConfig.conditionalPrompt();
+                // Legacy default: show the prompt regardless of conditions. Conditional mode (opt-in via
+                // hextras:interaction_prompt_conditional) defers the prompt until the effect chain fires.
+                if (promptable && !conditionalPrompt) {
                     sendInteractionPrompt(playerUuid, volume, interactableConfig);
                 }
                 logInteractionDebug("Dispatching interaction to volume=" + volume.getId());
-                ExtraTriggerDispatcher.dispatch(
+                boolean fired = ExtraTriggerDispatcher.dispatch(
                         volume, playerEntityRef, store, TriggerEventType.TAG_ADDED,
                         activeVolumes, "hextras_interact", typeName, blockPos, null, false);
+                if (fired) {
+                    dispatchedVolumeId = volume.getId();
+                    if (conditionalPrompt) {
+                        sendInteractionPrompt(playerUuid, volume, interactableConfig);
+                    }
+                }
             }
 
             boolean cancel = interactionTriggerService.isCancelPending(playerUuid);
             interactionTriggerService.rememberResult(playerUuid, interactionKey, cancel, now);
             logInteractionDebug("Interaction dispatch complete cancelPending=" + cancel);
+            postInteractionEvent(playerUuid, targetEntityUuid, typeName, dispatchedVolumeId, cancel);
             return cancel;
         } finally {
             interactionTriggerService.endInteraction(playerUuid);
@@ -339,6 +378,20 @@ public final class TriggerExtrasInteractionBridge {
                 && volume.getTargetTypes().contains(EntityTargetType.PLAYER)
                 && volume.getShape() != null
                 && volume.getShape().contains(volume.getPosition(), position);
+    }
+
+    private long replayWindowNanos() {
+        HyExtrasConfig cfg = plugin.getExtrasConfig();
+        long ms = cfg != null ? cfg.interactionReplayWindowMs : 50L;
+        return Math.max(0L, ms) * 1_000_000L;
+    }
+
+    private void postInteractionEvent(UUID player, @Nullable UUID targetEntity, String interactionType,
+                                      @Nullable String volumeId, boolean cancelled) {
+        if (plugin.getEventBus() != null) {
+            plugin.getEventBus().post(new HyExtrasEvents.InteractionEvent(
+                    player, targetEntity, interactionType, volumeId, cancelled));
+        }
     }
 
     private void logInteractionDebug(String message) {

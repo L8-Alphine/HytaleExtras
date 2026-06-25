@@ -2,6 +2,7 @@ package org.hyzionstudios.hyextras.packetapi.service;
 
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import org.hyzionstudios.hyextras.HyExtrasPlugin;
+import org.hyzionstudios.hyextras.config.HyExtrasConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public final class PlayerVisibilitySyncService {
     private final HyExtrasPlugin plugin;
     private final VisibilityPolicyService visibilityPolicy;
     private ScheduledExecutorService executor;
+    private long runningIntervalMs = -1L;
 
     public PlayerVisibilitySyncService(HyExtrasPlugin plugin, VisibilityPolicyService visibilityPolicy) {
         this.plugin = plugin;
@@ -29,17 +31,33 @@ public final class PlayerVisibilitySyncService {
     }
 
     public synchronized void start() {
+        long interval = resolveIntervalMs();
         if (executor != null) {
-            return;
+            if (interval == runningIntervalMs) {
+                return;
+            }
+            // Interval changed via reload — restart so the new rate takes effect.
+            executor.shutdownNow();
+            executor = null;
         }
+        runningIntervalMs = interval;
         executor = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread thread = new Thread(r, "HyExtras-PlayerVisibilitySync");
             thread.setDaemon(true);
             return thread;
         });
-        executor.scheduleAtFixedRate(this::safeSync, 500L, 500L, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(this::safeSync, interval, interval, TimeUnit.MILLISECONDS);
         plugin.getLogger().at(Level.INFO)
-                .log("[hextras visibility] Player visibility policy sync started.");
+                .log("[hextras visibility] Player visibility policy sync started (interval=" + interval + "ms).");
+    }
+
+    /** Minimum sync interval; clamps misconfiguration so the policy thread cannot spin too hot. */
+    private static final long MIN_INTERVAL_MS = 50L;
+
+    private long resolveIntervalMs() {
+        HyExtrasConfig cfg = plugin.getExtrasConfig();
+        long configured = cfg != null ? cfg.playerVisibilitySyncIntervalMs : 500L;
+        return Math.max(MIN_INTERVAL_MS, configured);
     }
 
     public synchronized void stop() {
@@ -48,6 +66,7 @@ public final class PlayerVisibilitySyncService {
         }
         executor.shutdownNow();
         executor = null;
+        runningIntervalMs = -1L;
         plugin.getLogger().at(Level.INFO)
                 .log("[hextras visibility] Player visibility policy sync stopped.");
     }
