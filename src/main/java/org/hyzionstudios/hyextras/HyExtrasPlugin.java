@@ -13,6 +13,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import org.hyzionstudios.hyextras.command.ExtrasRootCommand;
 import org.hyzionstudios.hyextras.config.ConfigLoader;
 import org.hyzionstudios.hyextras.config.HyExtrasConfig;
+import org.hyzionstudios.hyextras.event.HyExtrasEventBus;
 import org.hyzionstudios.hyextras.floatingitems.FloatingItemService;
 import org.hyzionstudios.hyextras.imageicons.ImageIconService;
 import org.hyzionstudios.hyextras.module.FloatingItemsModule;
@@ -64,6 +65,7 @@ public class HyExtrasPlugin extends JavaPlugin {
     private ImageIconService imageIconService;
     private TagNpcService tagNpcService;
     private FloatingItemService floatingItemService;
+    private final HyExtrasEventBus eventBus = new HyExtrasEventBus();
 
     /** username → UUID for all currently connected players. */
     private final ConcurrentHashMap<String, UUID> playerNameToUuid = new ConcurrentHashMap<>();
@@ -95,7 +97,7 @@ public class HyExtrasPlugin extends JavaPlugin {
         ensureTriggerExtrasInteractionBridge();
 
         extrasConfig = ConfigLoader.load(getDataDirectory());
-        variableService = new PlayerVariableService();
+        variableService = new PlayerVariableService(getDataDirectory());
         cooldownService = new CooldownService();
         playerOverrideService = new PlayerOverrideService();
         tagService = new PlayerTagService(getDataDirectory());
@@ -115,6 +117,7 @@ public class HyExtrasPlugin extends JavaPlugin {
             playerNameToUuid.put(normalizePlayerName(pr.getUsername()), pr.getUuid());
             onlinePlayers.put(pr.getUuid(), pr);
             tagService.loadPlayer(pr.getUuid());
+            variableService.loadPlayer(pr.getUuid());
             logDebug("player connected name=" + pr.getUsername() + " uuid=" + pr.getUuid()
                     + " tags=" + tagService.snapshotTags(pr.getUuid()).size());
             packetApi.syncNow();
@@ -126,7 +129,7 @@ public class HyExtrasPlugin extends JavaPlugin {
             playerNameToUuid.remove(normalizePlayerName(pr.getUsername()));
             onlinePlayers.remove(uuid);
             tagService.saveAndClearPlayer(uuid);
-            variableService.clearPlayer(uuid);
+            variableService.saveAndClearPlayer(uuid);
             cooldownService.clearPlayer(uuid);
             playerOverrideService.clearPlayer(uuid);
             packetApi.clearPlayer(uuid);
@@ -296,6 +299,12 @@ public class HyExtrasPlugin extends JavaPlugin {
     @Override
     protected void shutdown() {
         stopPacketFeatureServices();
+        if (tagService != null) {
+            tagService.stop();
+        }
+        if (variableService != null) {
+            variableService.stop();
+        }
         if (imageIconService != null) {
             imageIconService.stop();
         }
@@ -311,6 +320,7 @@ public class HyExtrasPlugin extends JavaPlugin {
         if (targetingPreventionService != null) {
             targetingPreventionService.clear();
         }
+        eventBus.clear();
         instance = null;
         playerNameToUuid.clear();
         onlinePlayers.clear();
@@ -368,6 +378,7 @@ public class HyExtrasPlugin extends JavaPlugin {
         return triggerExtrasInteractionBridge.getInteractableVolumeState();
     }
     public HyExtrasConfig getExtrasConfig() { return extrasConfig; }
+    public HyExtrasEventBus getEventBus() { return eventBus; }
     public RuntimeStateStore getRuntimeState() { return runtimeState; }
     public InternalModuleManager getModuleManager() { return moduleManager; }
     public TriggerExtrasInteractionBridge getTriggerExtrasInteractionBridge() { return triggerExtrasInteractionBridge; }
