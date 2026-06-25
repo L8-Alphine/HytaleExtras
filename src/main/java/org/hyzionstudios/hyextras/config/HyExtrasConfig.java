@@ -57,6 +57,35 @@ public final class HyExtrasConfig {
     public float floatingItemsDefaultRotationDegreesPerSecond = 45.0f;
     public int floatingItemsMaxItems = 512;
 
+    // --- Fine-tuning knobs ---
+
+    /** Interval (ms) between player-to-player visibility policy sync passes. Clamped to a sane minimum at use. */
+    public long playerVisibilitySyncIntervalMs = 500L;
+
+    /** Window (ms) within which a repeated identical interaction is treated as a replay and de-duplicated. */
+    public long interactionReplayWindowMs = 50L;
+
+    /** Seconds of inactivity before runtime TagNPC entity state is eligible for pruning. */
+    public long tagNpcStateRetentionSeconds = 10L;
+
+    /**
+     * Persist per-player variables to disk (opt-in). When false, variables are memory-only and reset on
+     * disconnect (legacy behavior). Individual keys can still be persisted via the {@code persist:} prefix.
+     */
+    public boolean playerVariablesPersistent = false;
+
+    /** Persist TagNPC entity state to disk for stable/named entities (opt-in, best-effort). */
+    public boolean tagNpcStatePersistent = false;
+
+    /** Offload per-player tag/variable disk I/O to a background executor instead of blocking the event thread. */
+    public boolean persistenceAsync = true;
+
+    /** Debounce window (ms) coalescing repeated saves for the same player. */
+    public long persistenceSaveDebounceMs = 1000L;
+
+    /** Allow the {@code regex} operator in variable conditions. Disable to avoid untrusted-pattern risk. */
+    public boolean variableRegexEnabled = true;
+
     public HyExtrasConfig() {
         modules.put(MODULE_TRIGGER_EXTRAS, new ModuleSettings(true, true, true));
         modules.put(MODULE_PLACEHOLDER_API, new ModuleSettings(true, true, true));
